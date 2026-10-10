@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/reports",
                                 "/admin",
                                 "/risk-radar",
+                                "/incidents",
                                 "/rescues",
                                 "/resources",
                                 "/programmes",

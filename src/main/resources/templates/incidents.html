@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#153d2d">
+    <title>WildGuard | Incident Management</title>
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/incidents.css">
+    <script defer src="/js/shell.js"></script>
+    <script defer src="/js/incidents.js"></script>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="sidebar">
+        <a href="/dashboard" class="brand" aria-label="WildGuard dashboard">
+            <span class="brand-mark" aria-hidden="true">🌿</span>
+            <span>WildGuard<small>Conservation platform</small></span>
+        </a>
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav id="sideNav" aria-label="Main navigation"></nav>
+        <div class="sidebar-footer"><strong>Protect wildlife. Preserve nature.</strong>Every report can support a faster response.</div>
+    </aside>
+    <div class="main-column">
+        <header class="topbar">
+            <div><p class="eyebrow">FIELD OPERATIONS</p><h1 id="pageTitle">Incident Management</h1></div>
+            <div class="topbar-actions"><span class="role-chip" id="topRole">Forest Officer</span><button id="logoutButton" type="button">Sign out <span aria-hidden="true">↗</span></button></div>
+        </header>
+        <main class="content incident-content">
+            <section class="incident-hero">
+                <div><p class="section-eyebrow">INCIDENT RESPONSE</p><h2>Report, assign and resolve incidents</h2><p>Record wildlife and habitat incidents, assign a responsible officer, and keep the response status up to date.</p></div>
+                <a class="hero-link" href="/risk-radar">View Risk Radar <span aria-hidden="true">↗</span></a>
+            </section>
+            <section class="incident-stats" aria-label="Incident summary">
+                <article class="stat-card"><span>Total incidents</span><strong id="totalCount">—</strong></article>
+                <article class="stat-card"><span>Open incidents</span><strong id="openCount">—</strong></article>
+                <article class="stat-card"><span>High / critical</span><strong id="urgentCount">—</strong></article>
+                <article class="stat-card"><span>Resolved</span><strong id="resolvedCount">—</strong></article>
+            </section>
+            <section class="panel incident-create">
+                <div class="panel-heading"><div><p class="section-eyebrow">NEW RECORD</p><h2>Report an incident</h2><p>Provide a location and enough detail for the response team.</p></div></div>
+                <form id="incidentForm" class="incident-form">
+                    <label>Incident type<input id="incidentType" required maxlength="100" placeholder="e.g. Injured animal, illegal logging"></label>
+                    <label>Severity<select id="incidentSeverity" required><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select></label>
+                    <label>Location<input id="incidentLocation" required maxlength="150" placeholder="Reserve / zone / village"></label>
+                    <label class="wide-field">Description<textarea id="incidentDescription" required maxlength="1000" rows="3" placeholder="Describe what happened and any immediate risks"></textarea></label>
+                    <div class="form-actions"><button class="primary-button" type="submit">+ Report incident</button><span id="formMessage" class="inline-message" role="status"></span></div>
+                </form>
+            </section>
+            <section class="panel incident-list-panel">
+                <div class="panel-heading list-heading"><div><p class="section-eyebrow">RESPONSE TRACKER</p><h2>Reported incidents</h2><p>Assign an officer or update the response status from the table.</p></div><button id="refreshIncidents" class="secondary-button" type="button">↻ Refresh</button></div>
+                <div class="filters">
+                    <label>Severity<select id="filterSeverity"><option value="">All severities</option><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select></label>
+                    <label>Status<select id="filterStatus"><option value="">All statuses</option><option value="REPORTED">Reported</option><option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In progress</option><option value="RESOLVED">Resolved</option><option value="CLOSED">Closed</option></select></label>
+                    <span id="listMessage" class="inline-message" role="status">Loading incidents…</span>
+                </div>
+                <div class="table-wrap"><table class="incident-table"><thead><tr><th>ID</th><th>Incident details</th><th>Severity</th><th>Location</th><th>Assigned officer</th><th>Status</th><th>Actions</th></tr></thead><tbody id="incidentRows"><tr><td colspan="7" class="empty-cell">Loading incidents…</td></tr></tbody></table></div>
+            </section>
+            <footer class="incident-footer">Risk levels support decision-making and do not replace an authorized officer's assessment.</footer>
+        </main>
+    </div>
+</div>
+</body>
+</html>

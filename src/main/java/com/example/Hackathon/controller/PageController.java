@@ -53,6 +53,16 @@ public class PageController {
         return "animal";
     }
     
+    @GetMapping("/risk-radar")
+    public String riskRadar() {
+        return "risk-radar";
+    }
+
+    @GetMapping("/incidents")
+    public String incidents() {
+        return "incidents";
+    }
+
     @GetMapping("/habitats")
     public String habitats() {
         return "habitat";
