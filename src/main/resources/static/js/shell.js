@@ -29,10 +29,9 @@
             { label: "User Management", icon: "♙", href: "/admin" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Patrols", icon: "⌖", upcoming: true },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Reports", icon: "▤", href: "/reports" }
+			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
+			{ label: "Resources", icon: "▣", href: "/resources" },
+			{ label: "Programmes", icon: "♧", href: "/programmes" },
         ],
         USER: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
@@ -45,17 +44,17 @@
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Patrols", icon: "⌖", upcoming: true },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
+			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
+			{ label: "Resources", icon: "▣", href: "/resources" },
+			{ label: "Programmes", icon: "♧", href: "/programmes" },
             { label: "Reports", icon: "▤", href: "/reports" }
         ],
         RESCUE_OFFICER: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
+			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
+			{ label: "Resources", icon: "▣", href: "/resources" },
+			{ label: "Programmes", icon: "♧", href: "/programmes" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Reports", icon: "▤", href: "/reports" }
         ]

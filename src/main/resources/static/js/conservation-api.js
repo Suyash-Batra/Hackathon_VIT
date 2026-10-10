@@ -1,29 +1,35 @@
-// Shared helper for the three conservation pages (Rescue Cases, Resources, Programmes).
-// These pages are served by the platform app, but their data comes from
-// conservation-service, which runs on port 8084.
 
-const conservationToken = localStorage.getItem("wildguardToken");
-
-if (!conservationToken) {
-    window.location.href = "/login";
+function getConservationToken() {
+    return localStorage.getItem("wildguardToken");
 }
 
-// same computer as this page, port 8084
 const CONSERVATION_API =
     window.location.protocol + "//" + window.location.hostname + ":8084";
 
+// Get the logged-in user's role
 function currentRole() {
     try {
-        const saved = JSON.parse(localStorage.getItem("wildguardUser") || "{}");
-        return String(saved.role || "USER").toUpperCase().replace("ROLE_", "");
+        const saved = JSON.parse(
+            localStorage.getItem("wildguardUser") || "{}"
+        );
+
+        return String(saved.role || "USER")
+            .toUpperCase()
+            .replace("ROLE_", "");
     } catch (error) {
         return "USER";
     }
 }
 
-// Calls conservation-service with the login token. Returns the JSON answer.
-// When the service says no (400, 403, 409 ...) it throws an Error with the service's message.
+// Send a request to conservation-service
 async function conservationRequest(path, method, body) {
+    const token = getConservationToken();
+
+    if (!token) {
+        window.location.href = "/login";
+        throw new Error("Please log in again.");
+    }
+
     let response;
 
     try {
@@ -32,9 +38,11 @@ async function conservationRequest(path, method, body) {
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": "Bearer " + conservationToken
+                "Authorization": "Bearer " + token
             },
-            body: body ? JSON.stringify(body) : undefined
+            body: body !== undefined && body !== null
+                ? JSON.stringify(body)
+                : undefined
         });
     } catch (error) {
         throw new Error(
@@ -45,16 +53,21 @@ async function conservationRequest(path, method, body) {
     const data = await response.json().catch(() => ({}));
 
     if (response.status === 401) {
-        throw new Error("Your login has expired. Please sign in again.");
+        throw new Error(
+            "Your login token was rejected. Please log in again."
+        );
     }
 
     if (!response.ok) {
-        throw new Error(data.message || "Request failed.");
+        throw new Error(
+            data.message || data.error || "Request failed."
+        );
     }
 
     return data;
 }
 
+// Escape HTML text before displaying it
 function escapeText(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
         "&": "&amp;",
@@ -71,11 +84,14 @@ function labelOf(value) {
         return "";
     }
 
-    const text = String(value).replace(/_/g, " ").toLowerCase();
+    const text = String(value)
+        .replace(/_/g, " ")
+        .toLowerCase();
+
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-// 2026-10-06T08:05:00 -> 06 Oct 2026, 08:05
+// Format date and time
 function formatDateTime(value) {
     if (!value) {
         return "";
@@ -96,6 +112,7 @@ function formatDateTime(value) {
     });
 }
 
+// Format date
 function formatDate(value) {
     if (!value) {
         return "";
@@ -114,7 +131,7 @@ function formatDate(value) {
     });
 }
 
-// green or red line at the top of the page
+// Display a success or error message on the page
 function showPageMessage(text, isError) {
     const box = document.getElementById("pageMessage");
 
@@ -123,25 +140,36 @@ function showPageMessage(text, isError) {
     }
 
     box.textContent = text || "";
-    box.className = isError ? "page-message error" : "page-message";
+    box.className = isError
+        ? "page-message error"
+        : "page-message";
 
     if (text) {
-        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        box.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
     }
 }
 
-// a small coloured label, for example the stage of a rescue case
+// Display a coloured status label
 function badge(value) {
-    return '<span class="badge badge-' + escapeText(String(value || "").toLowerCase()) + '">'
-        + escapeText(labelOf(value)) + "</span>";
+    return '<span class="badge badge-' +
+        escapeText(String(value || "").toLowerCase()) +
+        '">' +
+        escapeText(labelOf(value)) +
+        "</span>";
 }
 
-const conservationLogout = document.getElementById("logoutButton");
+// Logout
+const conservationLogout =
+    document.getElementById("logoutButton");
 
 if (conservationLogout) {
     conservationLogout.addEventListener("click", function () {
         localStorage.removeItem("wildguardToken");
         localStorage.removeItem("wildguardUser");
+
         window.location.href = "/login";
     });
 }
