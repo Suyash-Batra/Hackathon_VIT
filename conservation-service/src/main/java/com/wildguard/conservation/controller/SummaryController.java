@@ -3,24 +3,29 @@ package com.wildguard.conservation.controller;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wildguard.conservation.dto.ConservationSummary;
-import com.wildguard.conservation.service.ConservationSummaryService;
+import com.wildguard.conservation.service.SummaryService;
+import com.wildguard.conservation.util.LoginCheck;
 
-// Two small urls:
-//   GET /api/conservation/health  -> to check that my service is running (no login needed)
-//   GET /api/conservation/summary -> the numbers of my part for a dashboard
+import jakarta.servlet.http.HttpServletRequest;
+
+// GET /api/conservation/health  -> to see that my service is running (no login needed)
+// GET /api/conservation/summary -> the numbers of my part
 @RestController
 @RequestMapping("/api/conservation")
+@CrossOrigin(origins = "${wildguard.allowed-origins}")
 public class SummaryController {
 
-    private ConservationSummaryService summaryService;
+    private SummaryService summaryService;
+    private LoginCheck login;
 
-    public SummaryController(ConservationSummaryService summaryService) {
+    public SummaryController(SummaryService summaryService, LoginCheck login) {
         this.summaryService = summaryService;
+        this.login = login;
     }
 
     @GetMapping("/health")
@@ -32,7 +37,8 @@ public class SummaryController {
     }
 
     @GetMapping("/summary")
-    public ConservationSummary summary() {
+    public Map<String, Object> summary(HttpServletRequest request) {
+        login.check(request);
         return summaryService.summary();
     }
 }

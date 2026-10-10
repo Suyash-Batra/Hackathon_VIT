@@ -6,13 +6,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import com.wildguard.conservation.entity.RescueCase.RescueStage;
 
 // Every time the stage of a rescue case changes we add one row here.
 // This is what the timeline on the rescue page is made from.
@@ -26,7 +27,7 @@ public class RescueStageHistory {
     private Long id;
 
     // many history rows belong to one rescue case
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "rescue_case_id", nullable = false)
     private RescueCase rescueCase;
 
@@ -42,7 +43,6 @@ public class RescueStageHistory {
     private String action;
 
     private String notes;
-
 
     @Column(name = "changed_by_name")
     private String changedByName;

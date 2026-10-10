@@ -2,9 +2,10 @@ package com.wildguard.conservation.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,7 +23,8 @@ public class ProgrammeActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore // the programme itself is not repeated inside every activity
+    @ManyToOne(optional = false)
     @JoinColumn(name = "programme_id", nullable = false)
     private Programme programme;
 
@@ -34,7 +36,6 @@ public class ProgrammeActivity {
 
     @Column(name = "completed_at", nullable = false)
     private LocalDateTime completedAt;
-
 
     @Column(name = "recorded_by_name")
     private String recordedByName;

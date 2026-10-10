@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.wildguard.conservation.entity.RescueStage;
+import com.wildguard.conservation.entity.RescueCase.RescueStage;
 
 // Small unit tests for the rules of my service. They dont need the database.
 class ConservationRulesTest {

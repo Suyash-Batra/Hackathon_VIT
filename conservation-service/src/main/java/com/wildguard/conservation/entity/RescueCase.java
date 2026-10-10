@@ -1,6 +1,9 @@
 package com.wildguard.conservation.entity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +13,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+import com.wildguard.conservation.service.RescueService.TimelineEntry;
 
 // One rescue case = one row in the rescue_cases table.
 // incidentId and animalId are ids from the OTHER services (operations and wildlife), so there is
@@ -38,7 +44,6 @@ public class RescueCase {
     @Column(name = "animal_code")
     private String animalCode;
 
-
     @Column(name = "assigned_staff_name")
     private String assignedStaffName;
 
@@ -66,7 +71,6 @@ public class RescueCase {
     @Column(name = "release_reviewed_at")
     private LocalDateTime releaseReviewedAt;
 
-
     @Column(name = "opened_by_name")
     private String openedByName;
 
@@ -75,6 +79,21 @@ public class RescueCase {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
+
+    // ---- the fields below are NOT columns (@Transient). The service fills them before the
+    // ---- case is sent to the page, so the page knows which buttons to show.
+    @Transient
+    private List<RescueStage> allowedNextStages = new ArrayList<>();
+    @Transient
+    private boolean canAddTreatment;
+    @Transient
+    private boolean canRequestReview;
+    @Transient
+    private boolean canDecideReview;
+    @Transient
+    private List<TimelineEntry> timeline = new ArrayList<>();
+    @Transient
+    private List<ResourceAllocation> allocations = new ArrayList<>();
 
     // getters and setters
 
@@ -220,5 +239,104 @@ public class RescueCase {
 
     public void setClosedAt(LocalDateTime closedAt) {
         this.closedAt = closedAt;
+    }
+
+    // case is open until the animal is released or transferred
+    public boolean isActive() {
+        return stage != null && stage.isActive();
+    }
+
+    // days from opening till today (or till the closing day)
+    public long getDaysOpen() {
+        if (openedAt == null) {
+            return 0;
+        }
+        LocalDateTime end = closedAt != null ? closedAt : LocalDateTime.now();
+        return ChronoUnit.DAYS.between(openedAt, end);
+    }
+
+    public List<RescueStage> getAllowedNextStages() {
+        return allowedNextStages;
+    }
+
+    public void setAllowedNextStages(List<RescueStage> allowedNextStages) {
+        this.allowedNextStages = allowedNextStages;
+    }
+
+    public boolean isCanAddTreatment() {
+        return canAddTreatment;
+    }
+
+    public void setCanAddTreatment(boolean canAddTreatment) {
+        this.canAddTreatment = canAddTreatment;
+    }
+
+    public boolean isCanRequestReview() {
+        return canRequestReview;
+    }
+
+    public void setCanRequestReview(boolean canRequestReview) {
+        this.canRequestReview = canRequestReview;
+    }
+
+    public boolean isCanDecideReview() {
+        return canDecideReview;
+    }
+
+    public void setCanDecideReview(boolean canDecideReview) {
+        this.canDecideReview = canDecideReview;
+    }
+
+    public List<TimelineEntry> getTimeline() {
+        return timeline;
+    }
+
+    public void setTimeline(List<TimelineEntry> timeline) {
+        this.timeline = timeline;
+    }
+
+    public List<ResourceAllocation> getAllocations() {
+        return allocations;
+    }
+
+    public void setAllocations(List<ResourceAllocation> allocations) {
+        this.allocations = allocations;
+    }
+
+    // The stages a rescued animal goes through.
+    // REPORTED -> RESCUED -> UNDER_TREATMENT -> REHABILITATION -> RELEASED or TRANSFERRED
+    public enum RescueStage {
+        REPORTED, RESCUED, UNDER_TREATMENT, REHABILITATION, RELEASED, TRANSFERRED;
+
+        // case is still open if the animal is not released or transferred yet
+        public boolean isActive() {
+            return this != RELEASED && this != TRANSFERRED;
+        }
+
+        // tells which stages we are allowed to go to from the current stage
+        public List<RescueStage> nextStages() {
+            List<RescueStage> next = new ArrayList<>();
+            if (this == REPORTED) {
+                next.add(RESCUED);
+            } else if (this == RESCUED) {
+                next.add(UNDER_TREATMENT);
+                next.add(TRANSFERRED);
+            } else if (this == UNDER_TREATMENT) {
+                next.add(REHABILITATION);
+                next.add(TRANSFERRED);
+            } else if (this == REHABILITATION) {
+                next.add(RELEASED);
+                next.add(TRANSFERRED);
+                next.add(UNDER_TREATMENT); // animal got worse so back to treatment
+            }
+            // RELEASED and TRANSFERRED are the end, so the list stays empty
+            return next;
+        }
+    }
+
+    // Before an animal is released the rescue officer has to REQUEST a review
+    // and an officer has to APPROVE or REJECT it. NONE means nobody asked yet.
+    public enum ReleaseReviewStatus {
+        NONE, REQUESTED, APPROVED, REJECTED
     }
 }

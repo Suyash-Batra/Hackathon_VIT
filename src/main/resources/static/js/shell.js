@@ -25,12 +25,9 @@
     const menus = {
         ADMIN: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
             { label: "User Management", icon: "♙", href: "/admin" },
             { label: "Animals", icon: "🐘", href: "/animals" },
             { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Incidents", icon: "!", upcoming: true },
-            { label: "Patrols", icon: "⌖", upcoming: true },
             { label: "Rescue Cases", icon: "♡", href: "/rescues" },
             { label: "Resources", icon: "▣", href: "/resources" },
             { label: "Programmes", icon: "♧", href: "/programmes" }
@@ -40,9 +37,6 @@
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
             { label: "Animals", icon: "🐘", href: "/animals" },
             { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Report an Incident", icon: "!", upcoming: true },
-            { label: "My Reports", icon: "▤", upcoming: true },
-            { label: "Conservation Alerts", icon: "♧", upcoming: true }
         ],
 
         FOREST_OFFICER: [
@@ -50,8 +44,6 @@
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
             { label: "Animals", icon: "🐘", href: "/animals" },
             { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Incidents", icon: "!", upcoming: true },
-            { label: "Patrols", icon: "⌖", upcoming: true },
             { label: "Rescue Cases", icon: "♡", href: "/rescues" },
             { label: "Resources", icon: "▣", href: "/resources" },
             { label: "Programmes", icon: "♧", href: "/programmes" },
@@ -66,7 +58,6 @@
             { label: "Rescue Cases", icon: "♡", href: "/rescues" },
             { label: "Resources", icon: "▣", href: "/resources" },
             { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Incidents", icon: "!", upcoming: true },
             { label: "Reports", icon: "▤", href: "/reports" }
         ]
     };
@@ -133,8 +124,6 @@
         const pageTitles = {
             "/dashboard": "Your Dashboard",
             "/admin": "User Management",
-            "/reports": "Reports",
-            "/risk-radar": "Wildlife Risk Radar",
             "/rescues": "Rescue Cases",
             "/resources": "Resources",
             "/programmes": "Programmes",
