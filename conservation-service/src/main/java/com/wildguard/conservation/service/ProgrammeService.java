@@ -63,6 +63,16 @@ public class ProgrammeService {
         return prepare(programme, true);
     }
 
+    // the activities belong to the programme, so they are deleted first and then the programme
+    @Transactional
+    public String delete(Long id) {
+        Programme programme = find(id);
+        activityRepository.deleteAll(activityRepository.findByProgrammeIdOrderByCompletedAtDescIdDesc(id));
+        programmeRepository.delete(programme);
+        System.out.println("[PROGRAMME] " + programme.getProgrammeCode() + " deleted");
+        return programme.getProgrammeCode();
+    }
+
     // records completed work, for example "3 water sources restored"
     @Transactional
     public Programme addActivity(Long id, ProgrammeActivity form, LoginUser user) {
