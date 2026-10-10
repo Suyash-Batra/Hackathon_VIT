@@ -14,11 +14,19 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class WildlifeController {
 
-    private final WildlifeService wildlifeService;
+	private final AnimalRepository animalRepository;
+    private final WaterSourceRepository waterSourceRepository;
+    private final HabitatRepository habitatRepository;
+    private final HabitatAssessmentService habitatAssessmentService;
 
-    @Autowired
-    public WildlifeController(WildlifeService wildlifeService) {
-        this.wildlifeService = wildlifeService;
+    public WildlifeController(AnimalRepository animalRepository,
+                              WaterSourceRepository waterSourceRepository,
+                              HabitatRepository habitatRepository,
+                              HabitatAssessmentService habitatAssessmentService) {
+        this.animalRepository = animalRepository;
+        this.waterSourceRepository = waterSourceRepository;
+        this.habitatRepository = habitatRepository;
+        this.habitatAssessmentService = habitatAssessmentService;
     }
 
     // Animals
@@ -112,7 +120,7 @@ public class WildlifeController {
     @PostMapping("/animals")
     public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
         animal.setLastObservedAt(OffsetDateTime.now());
-        Animal saved = animalRepository.save(animal);
+        Animal saved = wildlifeService.saveAnimal(animal);
 
         if (saved.getZoneId() != null) {
             habitatAssessmentService.reevaluateZoneHabitat(saved.getZoneId());
