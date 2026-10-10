@@ -35,11 +35,6 @@ public class WildlifeController {
         return ResponseEntity.ok(wildlifeService.getAnimalById(id));
     }
 
-    @PostMapping("/animals")
-    public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
-        return new ResponseEntity<>(wildlifeService.saveAnimal(animal), HttpStatus.CREATED);
-    }
-
     // Species
     @GetMapping("/species")
     public ResponseEntity<List<Species>> getSpecies() {
@@ -72,12 +67,6 @@ public class WildlifeController {
         return new ResponseEntity<>(wildlifeService.saveZone(zone), HttpStatus.CREATED);
     }
 
-    // Habitats & Water Sources
-    @GetMapping("/habitats")
-    public ResponseEntity<List<Habitat>> getHabitats() {
-        return ResponseEntity.ok(wildlifeService.getAllHabitats());
-    }
-
     @PostMapping("/habitats")
     public ResponseEntity<Habitat> createHabitat(@RequestBody Habitat habitat) {
         return new ResponseEntity<>(wildlifeService.saveHabitat(habitat), HttpStatus.CREATED);
@@ -93,10 +82,42 @@ public class WildlifeController {
         return new ResponseEntity<>(wildlifeService.saveWaterSource(waterSource), HttpStatus.CREATED);
     }
 
+    
+ // GET /api/habitats -> Re-evaluates and returns updated conditions
+    @GetMapping("/habitats")
+    public List<Habitat> getHabitats() {
+        return habitatAssessmentService.reevaluateAllHabitats();
+    }
+
+    // PATCH /api/water-sources/{id}/status -> Changes water status and recalculates habitat
     @PatchMapping("/water-sources/{id}/status")
     public ResponseEntity<WaterSource> updateWaterStatus(
             @PathVariable Long id,
             @RequestParam String status) {
-        return ResponseEntity.ok(wildlifeService.updateWaterStatus(id, status));
+
+        WaterSource ws = waterSourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Water source not found"));
+
+        ws.setStatus(status.toUpperCase());
+        ws.setLastCheckedAt(OffsetDateTime.now());
+        WaterSource saved = waterSourceRepository.save(ws);
+
+        // Automatically update the zone's habitat condition
+        habitatAssessmentService.reevaluateZoneHabitat(saved.getZoneId());
+
+        return ResponseEntity.ok(saved);
+    }
+
+    // POST /api/animals -> Saves new specimen and recalculates habitat
+    @PostMapping("/animals")
+    public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
+        animal.setLastObservedAt(OffsetDateTime.now());
+        Animal saved = animalRepository.save(animal);
+
+        if (saved.getZoneId() != null) {
+            habitatAssessmentService.reevaluateZoneHabitat(saved.getZoneId());
+        }
+
+        return ResponseEntity.ok(saved);
     }
 }
