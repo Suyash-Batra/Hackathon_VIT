@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <script defer th:src="@{/js/dashboard.js}"></script>
+</head>
+<body>
+    <main class="form-panel">
+        <section class="form-container">
+            <div class="mobile-brand">🌿 WildGuard</div>
+            <span class="eyebrow">YOUR CONSERVATION SPACE</span>
+            <h2>Welcome, <span id="userName">Conservationist</span>!</h2>
+            <p class="form-description">
+                You're signed in to WildGuard. Together, we can make a difference
+                for wildlife and natural habitats.
+            </p>
+
+            <div style="background:#e7f0e7;padding:22px;border-radius:12px;margin-bottom:24px;">
+                <h3 style="margin-bottom:10px;">Your account</h3>
+                <p id="userEmail" style="margin-bottom:8px;"></p>
+                <p id="userRole"></p>
+            </div>
+
+            <button id="logoutButton" type="button">Sign out</button>
+        </section>
+    </main>
+</body>
+</html>
