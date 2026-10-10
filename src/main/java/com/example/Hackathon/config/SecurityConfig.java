@@ -40,6 +40,9 @@ public class SecurityConfig {
                                 "/reports",
                                 "/admin",
                                 "/risk-radar",
+                                "/rescues",
+                                "/resources",
+                                "/programmes",
                                 "/favicon.ico",
                                 "/error"
                         ).permitAll()

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Rescue Cases</title>
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/conservation.css">
+    <script defer src="/js/shell.js"></script>
+    <script defer src="/js/conservation-api.js"></script>
+    <script defer src="/js/rescues.js"></script>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="sidebar">
+        <a href="/dashboard" class="brand">
+            <span class="brand-mark">🌿</span>
+            <span>WildGuard<small>Conservation platform</small></span>
+        </a>
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav id="sideNav" aria-label="Main navigation"></nav>
+        <div class="sidebar-footer">
+            <strong>Protect wildlife. Preserve nature.</strong>
+            Rescue, treatment and release of injured wildlife.
+        </div>
+    </aside>
+
+    <div class="main-column">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                <h1 id="pageTitle">Rescue Cases</h1>
+            </div>
+            <div class="topbar-actions">
+                <span class="role-chip" id="topRole">User</span>
+                <button id="logoutButton" type="button">Sign out</button>
+            </div>
+        </header>
+
+        <main class="content">
+            <p id="pageMessage" class="page-message" role="status"></p>
+            <section class="page-intro">
+                <h2>Rescue and Rehabilitation</h2>
+                <p>Follow each rescued animal from the first report to release or transfer.
+                    An animal can only be released after an officer approves the release review.</p>
+            </section>
+
+            <section class="stats">
+                <div class="card">
+                    <h3>Active Rescues</h3>
+                    <p id="statActive">0</p>
+                </div>
+                <div class="card">
+                    <h3>Release Reviews Waiting</h3>
+                    <p id="statReviews">0</p>
+                </div>
+                <div class="card">
+                    <h3>Closed Cases</h3>
+                    <p id="statClosed">0</p>
+                </div>
+            </section>
+
+            <section class="card form-card" id="newRescueCard">
+                <h3>Open a Rescue Case</h3>
+                <form id="rescueForm">
+                    <div class="form-grid">
+                        <label>
+                            Incident ID (optional)
+                            <input id="incidentId" type="text" maxlength="40" placeholder="e.g. INC-109">
+                        </label>
+                        <label>
+                            Animal ID (optional)
+                            <input id="animalId" type="text" maxlength="40" placeholder="e.g. AN-1045">
+                        </label>
+                        <label>
+                            Responsible person
+                            <input id="assignedStaffName" type="text" maxlength="120" placeholder="Leave empty for yourself">
+                        </label>
+                        <label class="wide">
+                            What happened
+                            <textarea id="summary" rows="2" maxlength="1000" required
+                                      placeholder="Short description of the animal and the injury"></textarea>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Open Rescue Case</button>
+                    </div>
+                </form>
+            </section>
+
+            <section>
+                <div class="list-heading">
+                    <div>
+                        <h2 class="section-heading">Rescue Cases</h2>
+                        <p class="muted">Click a row to open the case.</p>
+                    </div>
+                    <select id="stageFilter" aria-label="Filter by stage">
+                        <option value="">All stages</option>
+                        <option value="ACTIVE">Active only</option>
+                        <option value="REPORTED">Reported</option>
+                        <option value="RESCUED">Rescued</option>
+                        <option value="UNDER_TREATMENT">Under treatment</option>
+                        <option value="REHABILITATION">Rehabilitation</option>
+                        <option value="RELEASED">Released</option>
+                        <option value="TRANSFERRED">Transferred</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Case</th>
+                            <th>Summary</th>
+                            <th>Incident</th>
+                            <th>Animal</th>
+                            <th>Stage</th>
+                            <th>Release review</th>
+                            <th>Responsible</th>
+                            <th>Days open</th>
+                        </tr>
+                        </thead>
+                        <tbody id="rescueTable">
+                        <tr>
+                            <td colspan="8" class="empty-row">Loading rescue cases...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="detail-panel" id="detailPanel" hidden>
+                <div class="detail-head">
+                    <h2 id="detailCode">RES-000</h2>
+                    <span id="detailStage"></span>
+                    <span id="detailReview"></span>
+                </div>
+                <p class="plain-text" id="detailSummary"></p>
+                <ol class="stage-steps" id="stageSteps"></ol>
+
+                <div class="detail-grid">
+                    <div class="card">
+                        <h3>Rescue Journey Timeline</h3>
+                        <ol class="timeline" id="timeline"></ol>
+                    </div>
+
+                    <div class="side-column">
+                        <div class="card">
+                            <h3>Case Facts</h3>
+                            <dl class="facts" id="facts"></dl>
+                        </div>
+
+                        <div class="card" id="actionsCard">
+                            <h3>Actions</h3>
+                            <div id="actions"></div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Vehicles and Equipment in Use</h3>
+                            <div id="detailResources" class="plain-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
