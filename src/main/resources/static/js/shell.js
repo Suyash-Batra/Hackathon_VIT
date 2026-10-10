@@ -22,50 +22,45 @@
 
     const path = window.location.pathname.replace(/\/$/, "") || "/";
 
-    const menus = {
-        ADMIN: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Incidents", icon: "!", href: "/incidents" },
-            { label: "User Management", icon: "♙", href: "/admin" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" }
-        ],
+	const menus = {
+	    ADMIN: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "User Management", icon: "♙", href: "/admin" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" },
+	        { label: "Risk Radar", icon: "⚠", href: "/risk-radar" }
+	    ],
 
-        USER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Incidents", icon: "!", href: "/incidents" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-        ],
+	    USER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Risk Radar", icon: "⚠", href: "/risk-radar" }
+	    ],
 
-        FOREST_OFFICER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Incidents", icon: "!", href: "/incidents" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Reports", icon: "▤", href: "/reports" }
-        ],
+	    FOREST_OFFICER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" },
+	        { label: "Risk Radar", icon: "⚠", href: "/risk-radar" }
+	    ],
 
-        RESCUE_OFFICER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Incidents", icon: "!", href: "/incidents" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Reports", icon: "▤", href: "/reports" }
-        ]
-    };
+	    RESCUE_OFFICER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" },
+	        { label: "Risk Radar", icon: "⚠", href: "/risk-radar" }
+	    ]
+	};
 
     const activeMenus = menus[role] || menus.USER;
     const navigation = document.getElementById("sideNav");
