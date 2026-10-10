@@ -30,16 +30,6 @@ public class PageController {
     public String adminDashboard() {
         return "admin_dashboard";
     }
-    
-    @GetMapping("/reports")
-    public String reports() {
-        return "reports";
-    }
-    
-    @GetMapping("/risk-radar")
-    public String riskRadar() {
-        return "risk-radar";
-    }
 
     // ---- conservation pages (data comes from conservation-service on port 8084) ----
 
