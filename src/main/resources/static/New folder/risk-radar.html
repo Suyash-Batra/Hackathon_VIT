@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Risk Radar</title>
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/risk-radar.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="brand" href="/dashboard">
+            <span class="brand-mark">W</span>
+            <span>WildGuard<small>Conservation Platform</small></span>
+        </a>
+        <nav id="sideNav"></nav>
+        <div class="sidebar-footer">Protect wildlife. Protect tomorrow.</div>
+    </aside>
+
+    <main class="main-area">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">CONSERVATION INTELLIGENCE</p>
+                <h1 id="pageTitle">Wildlife Risk Radar</h1>
+            </div>
+            <div class="topbar-user">
+                <span id="topRole" class="role-badge">Officer</span>
+                <button id="logoutButton" class="logout-button" type="button">Log out</button>
+            </div>
+        </header>
+
+        <section class="risk-intro">
+            <div>
+                <p class="eyebrow">ZONE MONITORING</p>
+                <h2>Understand where attention is needed</h2>
+                <p>Review recorded incidents, overdue patrols and habitat warnings. Every score includes its contributing factors.</p>
+            </div>
+            <button id="refreshRisk" class="refresh-button" type="button">↻ Refresh data</button>
+        </section>
+
+        <section class="risk-legend">
+            <div><span class="risk-dot low"></span><strong>Low</strong><span>0–24</span></div>
+            <div><span class="risk-dot medium"></span><strong>Medium</strong><span>25–49</span></div>
+            <div><span class="risk-dot high"></span><strong>High</strong><span>50–74</span></div>
+            <div><span class="risk-dot critical"></span><strong>Critical</strong><span>75–100</span></div>
+        </section>
+
+        <div id="riskMessage" class="risk-message" role="status">Loading risk data...</div>
+        <section id="riskGrid" class="risk-grid" aria-live="polite"></section>
+
+        <footer class="risk-note">
+            Risk scores are rule-based decision-support indicators, not validated ecological predictions.
+            Patrol recommendations require an authorized officer's review.
+        </footer>
+    </main>
+</div>
+
+<script src="/js/shell.js"></script>
+<script src="/js/risk-radar.js"></script>
+</body>
+</html>

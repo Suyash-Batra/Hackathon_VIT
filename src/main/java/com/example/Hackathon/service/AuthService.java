@@ -41,6 +41,7 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole("USER");
+        user.setStatus("PENDING");
 
         user = userRepository.save(user);
 
@@ -68,6 +69,20 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole());
+        
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            if ("PENDING".equalsIgnoreCase(user.getStatus())) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Your account is waiting for admin approval."
+                );
+            }
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Your account is inactive. Contact the administrator."
+            );
+        }
 
         return new AuthResponse(
                 token,

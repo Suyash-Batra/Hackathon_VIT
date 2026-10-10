@@ -25,4 +25,19 @@ public class PageController {
     public String dashboard() {
         return "dashboard";
     }
+    
+    @GetMapping("/admin")
+    public String adminDashboard() {
+        return "admin_dashboard";
+    }
+    
+    @GetMapping("/reports")
+    public String reports() {
+        return "reports";
+    }
+    
+    @GetMapping("/risk-radar")
+    public String riskRadar() {
+        return "risk-radar";
+    }
 }

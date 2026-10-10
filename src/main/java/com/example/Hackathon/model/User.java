@@ -1,3 +1,4 @@
+
 package com.example.Hackathon.model;
 
 import jakarta.persistence.*;
@@ -22,6 +23,9 @@ public class User {
 
     @Column(nullable = false)
     private String role = "USER";
+
+    @Column(nullable = false)
+    private String status = "PENDING";
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -67,6 +71,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

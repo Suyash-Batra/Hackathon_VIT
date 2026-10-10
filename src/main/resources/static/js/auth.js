@@ -23,7 +23,11 @@ function saveLogin(data) {
         role: data.role
     }));
 
-    window.location.href = "/dashboard";
+    if (data.role === "ADMIN") {
+        window.location.href = "/admin";
+    } else {
+        window.location.href = "/dashboard";
+    }
 }
 
 async function sendRequest(url, body) {
@@ -53,7 +57,8 @@ if (signupForm) {
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmPassword =
+            document.getElementById("confirmPassword").value;
 
         if (!name) {
             showMessage("Please enter your name.", "error");
@@ -75,7 +80,13 @@ if (signupForm) {
                 password: password
             });
 
-            saveLogin(data);
+			showMessage(
+			    data.message ||
+			    "Account created successfully. Please wait for admin approval before logging in.",
+			    "success"
+			);
+
+			signupForm.reset();
         } catch (error) {
             showMessage(error.message, "error");
         } finally {

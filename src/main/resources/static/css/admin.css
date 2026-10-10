@@ -1,0 +1,73 @@
+/* Admin-only refinements. Shared layout, buttons, forms and tables live in shell.css. */
+
+.admin-overview-note {
+    margin-top: -2px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.app-body .stats .card {
+    border-top: 3px solid #d8e9dc;
+}
+
+.app-body .stats .card:nth-child(2) {
+    border-top-color: #a9d1b4;
+}
+
+.app-body .stats .card:nth-child(3) {
+    border-top-color: #e6d6a7;
+}
+
+#message:empty {
+    display: none;
+}
+
+#message:not(:empty) {
+    padding: 11px 14px;
+    border: 1px solid #dbe9dd;
+    border-radius: 9px;
+    color: var(--forest-800);
+    background: #f1f7f1;
+}
+
+#userTable select {
+    min-width: 130px;
+    max-width: 180px;
+}
+
+#userTable .action-button {
+    min-height: 32px;
+    margin: 2px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-size: 11px;
+}
+
+#userTable .save-button {
+    color: #ffffff;
+    background: var(--forest-800);
+}
+
+#userTable .save-button:hover {
+    background: var(--forest-700);
+}
+
+#userTable .status-button {
+    border-color: var(--border-strong);
+    color: var(--forest-800);
+    background: var(--forest-50);
+    box-shadow: none;
+}
+
+#userTable .status-button:hover {
+    border-color: #bfd7c3;
+    background: #e6f1e8;
+    box-shadow: none;
+}
+
+@media (max-width: 760px) {
+    #userTable select {
+        min-width: 120px;
+    }
+}

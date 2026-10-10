@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Login</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <script defer th:src="@{/js/auth.js}"></script>
+</head>
+<body>
+    <main class="auth-layout">
+        <section class="brand-panel">
+            <div class="brand">
+                <span class="brand-icon">🌿</span>
+                <span>WildGuard</span>
+            </div>
+            <div class="brand-content">
+                <span class="eyebrow">PROTECT · PRESERVE · RESTORE</span>
+                <h1>Every life in the wild matters.</h1>
+                <p>Technology for a safer future for wildlife and the people protecting it.</p>
+            </div>
+            <div class="brand-footer">Together, we can protect the wild.</div>
+            <div class="leaf leaf-one"></div>
+            <div class="leaf leaf-two"></div>
+        </section>
+
+        <section class="form-panel">
+            <div class="form-container">
+                <div class="mobile-brand">🌿 WildGuard</div>
+                <span class="eyebrow">WELCOME BACK</span>
+                <h2>Sign in to your account</h2>
+                <p class="form-description">Continue your work in wildlife conservation.</p>
+
+                <div id="message" class="message" role="alert"></div>
+
+                <form id="loginForm">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email"
+                           placeholder="you@example.com" required>
+
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Enter your password" required>
+
+                    <button type="submit" id="submitButton">Sign in</button>
+                </form>
+
+                <p class="switch-form">
+                    Don't have an account?
+                    <a th:href="@{/signup}">Create an account</a>
+                </p>
+
+                <p class="small-note">A better future for wildlife starts with us.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
