@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Dashboard</title>
+
+    <link rel="stylesheet" th:href="@{/css/shell.css}">
+
+    <script defer th:src="@{/js/shell.js}"></script>
+    <script defer th:src="@{/js/dashboard.js}"></script>
+</head>
+<body class="app-body">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a href="/dashboard" class="brand">
+                <span class="brand-mark">🌿</span>
+                <span>
+                    WildGuard
+                    <small>Conservation platform</small>
+                </span>
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+            <nav id="sideNav" aria-label="Main navigation"></nav>
+
+            <div class="sidebar-footer">
+                <strong>Protect wildlife. Preserve nature.</strong>
+                Every report can help support conservation efforts.
+            </div>
+        </aside>
+
+        <div class="main-column">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                    <h1 id="pageTitle">Your Dashboard</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <span class="role-chip" id="topRole">User</span>
+                    <button id="logoutButton" type="button">Sign out</button>
+                </div>
+            </header>
+
+            <main class="content">
+                <section class="page-intro">
+                    <h2>Welcome, <span id="userName">Conservationist</span>!</h2>
+                    <p>
+                        Welcome to WildGuard. Your workspace brings conservation
+                        information and reporting tools together in one place.
+                    </p>
+                </section>
+
+                <section class="card account-card">
+                    <h3>Your Account</h3>
+
+                    <div class="account-details">
+                        <div class="detail-item">
+                            <small>Email Address</small>
+                            <p id="userEmail">Loading...</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <small>Your Role</small>
+                            <p id="userRole">Loading...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="section-heading">Your Conservation Workspace</h2>
+                    <p>
+                        These areas will become available as the team implements
+                        each WildGuard feature.
+                    </p>
+
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <div class="feature-icon">🐾</div>
+                            <h3>Wildlife Incidents</h3>
+                            <p>
+                                Report wildlife sightings, threats or incidents
+                                and follow their progress.
+                            </p>
+                            <span class="coming-soon">Coming soon</span>
+                        </article>
+
+                        <article class="feature-card">
+                            <div class="feature-icon">🌲</div>
+                            <h3>Forest Patrols</h3>
+                            <p>
+                                View patrol activity, field observations and
+                                conservation tasks relevant to your role.
+                            </p>
+                            <span class="coming-soon">Coming soon</span>
+                        </article>
+
+                        <article class="feature-card">
+                            <div class="feature-icon">🩺</div>
+                            <h3>Rescue Operations</h3>
+                            <p>
+                                Follow rescue cases, response progress and
+                                recorded outcomes.
+                            </p>
+                            <span class="coming-soon">Coming soon</span>
+                        </article>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
