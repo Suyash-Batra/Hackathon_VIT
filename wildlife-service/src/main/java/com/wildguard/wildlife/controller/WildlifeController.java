@@ -14,22 +14,13 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class WildlifeController {
 
-	private final AnimalRepository animalRepository;
-    private final WaterSourceRepository waterSourceRepository;
-    private final HabitatRepository habitatRepository;
-    private final HabitatAssessmentService habitatAssessmentService;
+    private final WildlifeService wildlifeService;
 
-    public WildlifeController(AnimalRepository animalRepository,
-                              WaterSourceRepository waterSourceRepository,
-                              HabitatRepository habitatRepository,
-                              HabitatAssessmentService habitatAssessmentService) {
-        this.animalRepository = animalRepository;
-        this.waterSourceRepository = waterSourceRepository;
-        this.habitatRepository = habitatRepository;
-        this.habitatAssessmentService = habitatAssessmentService;
+    @Autowired
+    public WildlifeController(WildlifeService wildlifeService) {
+        this.wildlifeService = wildlifeService;
     }
 
-    // Animals
     @GetMapping("/animals")
     public ResponseEntity<List<Animal>> getAnimals(
             @RequestParam(required = false) Long zoneId,
@@ -43,7 +34,11 @@ public class WildlifeController {
         return ResponseEntity.ok(wildlifeService.getAnimalById(id));
     }
 
-    // Species
+    @PostMapping("/animals")
+    public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
+        return new ResponseEntity<>(wildlifeService.saveAnimal(animal), HttpStatus.CREATED);
+    }
+
     @GetMapping("/species")
     public ResponseEntity<List<Species>> getSpecies() {
         return ResponseEntity.ok(wildlifeService.getAllSpecies());
@@ -54,7 +49,6 @@ public class WildlifeController {
         return new ResponseEntity<>(wildlifeService.saveSpecies(species), HttpStatus.CREATED);
     }
 
-    // Areas & Zones
     @GetMapping("/areas")
     public ResponseEntity<List<ProtectedArea>> getAreas() {
         return ResponseEntity.ok(wildlifeService.getAllAreas());
@@ -75,6 +69,11 @@ public class WildlifeController {
         return new ResponseEntity<>(wildlifeService.saveZone(zone), HttpStatus.CREATED);
     }
 
+    @GetMapping("/habitats")
+    public ResponseEntity<List<Habitat>> getHabitats() {
+        return ResponseEntity.ok(wildlifeService.getAllHabitats());
+    }
+
     @PostMapping("/habitats")
     public ResponseEntity<Habitat> createHabitat(@RequestBody Habitat habitat) {
         return new ResponseEntity<>(wildlifeService.saveHabitat(habitat), HttpStatus.CREATED);
@@ -90,42 +89,10 @@ public class WildlifeController {
         return new ResponseEntity<>(wildlifeService.saveWaterSource(waterSource), HttpStatus.CREATED);
     }
 
-    
- // GET /api/habitats -> Re-evaluates and returns updated conditions
-    @GetMapping("/habitats")
-    public List<Habitat> getHabitats() {
-        return habitatAssessmentService.reevaluateAllHabitats();
-    }
-
-    // PATCH /api/water-sources/{id}/status -> Changes water status and recalculates habitat
     @PatchMapping("/water-sources/{id}/status")
     public ResponseEntity<WaterSource> updateWaterStatus(
             @PathVariable Long id,
             @RequestParam String status) {
-
-        WaterSource ws = waterSourceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Water source not found"));
-
-        ws.setStatus(status.toUpperCase());
-        ws.setLastCheckedAt(OffsetDateTime.now());
-        WaterSource saved = waterSourceRepository.save(ws);
-
-        // Automatically update the zone's habitat condition
-        habitatAssessmentService.reevaluateZoneHabitat(saved.getZoneId());
-
-        return ResponseEntity.ok(saved);
-    }
-
-    // POST /api/animals -> Saves new specimen and recalculates habitat
-    @PostMapping("/animals")
-    public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
-        animal.setLastObservedAt(OffsetDateTime.now());
-        Animal saved = wildlifeService.saveAnimal(animal);
-
-        if (saved.getZoneId() != null) {
-            habitatAssessmentService.reevaluateZoneHabitat(saved.getZoneId());
-        }
-
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(wildlifeService.updateWaterStatus(id, status));
     }
 }
