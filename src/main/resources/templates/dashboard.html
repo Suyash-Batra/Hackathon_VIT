@@ -1,21 +1,22 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#153d2d">
     <title>WildGuard | Dashboard</title>
 
     <link rel="stylesheet" th:href="@{/css/shell.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 
     <script defer th:src="@{/js/shell.js}"></script>
     <script defer th:src="@{/js/dashboard.js}"></script>
 </head>
-<body class="app-body">
+<body class="app-body dashboard-page">
     <div class="app-shell">
         <aside class="sidebar">
-            <a href="/dashboard" class="brand">
-                <span class="brand-mark">🌿</span>
+            <a href="/dashboard" class="brand" aria-label="WildGuard dashboard">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
                 <span>
                     WildGuard
                     <small>Conservation platform</small>
@@ -32,82 +33,131 @@
         </aside>
 
         <div class="main-column">
-            <header class="topbar">
-                <div>
+            <header class="topbar dashboard-topbar">
+                <div class="topbar-heading">
                     <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
-                    <h1 id="pageTitle">Your Dashboard</h1>
+                    <h1 id="pageTitle">Dashboard</h1>
                 </div>
 
                 <div class="topbar-actions">
                     <span class="role-chip" id="topRole">User</span>
-                    <button id="logoutButton" type="button">Sign out</button>
+                    <button id="logoutButton" class="signout-button" type="button">Sign out <span aria-hidden="true">↗</span></button>
                 </div>
             </header>
 
-            <main class="content">
-                <section class="page-intro">
-                    <h2>Welcome, <span id="userName">Conservationist</span>!</h2>
-                    <p>
-                        Welcome to WildGuard. Your workspace brings conservation
-                        information and reporting tools together in one place.
-                    </p>
+            <main class="content dashboard-content">
+                <section class="dashboard-hero" aria-labelledby="welcomeHeading">
+                    <div class="hero-copy">
+                        <div class="hero-kicker"><span class="hero-kicker-dot"></span> YOUR CONSERVATION WORKSPACE</div>
+                        <h2 id="welcomeHeading">Good to see you,<br><span id="userName">Conservationist</span>.</h2>
+                        <p>Bring your conservation work together in one place. Review rescue cases, explore resources and keep programmes moving forward.</p>
+                        <div class="hero-footnote"><span class="hero-leaf" aria-hidden="true">✦</span> Every action can make a difference for wildlife.</div>
+                    </div>
+
+                    <div class="hero-art" aria-hidden="true">
+                        <div class="hero-art-glow"></div>
+                        <div class="hero-art-ring ring-one"></div>
+                        <div class="hero-art-ring ring-two"></div>
+                        <div class="hero-art-leaf leaf-one">🌿</div>
+                        <div class="hero-art-leaf leaf-two">🍃</div>
+                        <div class="hero-art-center">
+                            <svg viewBox="0 0 100 100" role="presentation" focusable="false">
+                                <path d="M50 12 77 22v23c0 20-12 33-27 43C35 78 23 65 23 45V22L50 12Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M35 52c10-1 22-9 29-23 3 18-4 33-18 38-7 2-13-3-11-10 1-2 1-4 0-5Z" fill="currentColor" opacity=".95"/>
+                                <path d="M37 65c7-11 14-19 25-29" fill="none" stroke="#d8ead7" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="hero-art-star star-one">✳</span>
+                        <span class="hero-art-star star-two">✦</span>
+                    </div>
                 </section>
 
-                <section class="card account-card">
-                    <h3>Your Account</h3>
-
-                    <div class="account-details">
-                        <div class="detail-item">
-                            <small>Email Address</small>
-                            <p id="userEmail">Loading...</p>
+                <section class="account-panel" aria-labelledby="accountHeading">
+                    <div class="account-panel-heading">
+                        <span class="account-heading-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="3.4"></circle><path d="M5.5 20c.5-3.3 2.8-5.4 6.5-5.4s6 2.1 6.5 5.4"></path></svg>
+                        </span>
+                        <div>
+                            <h2 id="accountHeading">Your account</h2>
+                            <p>Your profile details</p>
                         </div>
+                    </div>
 
-                        <div class="detail-item">
-                            <small>Your Role</small>
-                            <p id="userRole">Loading...</p>
+                    <div class="account-detail-grid">
+                        <div class="account-detail">
+                            <span class="detail-icon" aria-hidden="true">✉</span>
+                            <div class="detail-copy">
+                                <span class="detail-label">Email address</span>
+                                <p id="userEmail">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="account-detail">
+                            <span class="detail-icon role-detail-icon" aria-hidden="true">♙</span>
+                            <div class="detail-copy">
+                                <span class="detail-label">Your role</span>
+                                <p id="userRole">Loading...</p>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                <section>
-                    <h2 class="section-heading">Your Conservation Workspace</h2>
-                    <p>
-                        These areas will become available as the team implements
-                        each WildGuard feature.
-                    </p>
+                <section class="workspace-section" aria-labelledby="workspaceHeading">
+                    <div class="workspace-heading-row">
+                        <div>
+                            <p class="section-eyebrow">GET STARTED</p>
+                            <h2 id="workspaceHeading">Explore your workspace</h2>
+                            <p class="workspace-description">Choose a section to view and manage its conservation information.</p>
+                        </div>
+                        <span class="workspace-count"><span class="count-dot"></span> 3 workspaces</span>
+                    </div>
 
-                    <div class="feature-grid">
-                        <article class="feature-card">
-                            <div class="feature-icon">🐾</div>
-                            <h3>Wildlife Incidents</h3>
-                            <p>
-                                Report wildlife sightings, threats or incidents
-                                and follow their progress.
-                            </p>
-                            <span class="coming-soon">Coming soon</span>
-                        </article>
+                    <div class="workspace-grid">
+                        <a class="workspace-card rescue-card" href="/rescues">
+                            <div class="workspace-card-top">
+                                <span class="workspace-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" focusable="false"><path d="M12 20s-7.5-4.4-7.5-10A4.1 4.1 0 0 1 12 7.7 4.1 4.1 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10Z"></path><path d="M7.3 13.1h2.5l1.3-2.2 1.9 4 1.2-1.8h2.5"></path></svg>
+                                </span>
+                                <span class="workspace-number">01</span>
+                            </div>
+                            <span class="workspace-tag">CASE MANAGEMENT</span>
+                            <h3>Rescue cases</h3>
+                            <p>Review wildlife rescue records, follow case progress and keep response information organised.</p>
+                            <span class="workspace-link">Open rescue cases <span aria-hidden="true">↗</span></span>
+                        </a>
 
-                        <article class="feature-card">
-                            <div class="feature-icon">🌲</div>
-                            <h3>Forest Patrols</h3>
-                            <p>
-                                View patrol activity, field observations and
-                                conservation tasks relevant to your role.
-                            </p>
-                            <span class="coming-soon">Coming soon</span>
-                        </article>
+                        <a class="workspace-card resource-card" href="/resources">
+                            <div class="workspace-card-top">
+                                <span class="workspace-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" focusable="false"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"></path><path d="m4.4 7.6 7.6 4.3 7.6-4.3M12 12v8.5M8 5.3l8 4.5"></path></svg>
+                                </span>
+                                <span class="workspace-number">02</span>
+                            </div>
+                            <span class="workspace-tag">SUPPLIES & ALLOCATION</span>
+                            <h3>Resources</h3>
+                            <p>View conservation supplies and review resource availability and allocation information.</p>
+                            <span class="workspace-link">Open resources <span aria-hidden="true">↗</span></span>
+                        </a>
 
-                        <article class="feature-card">
-                            <div class="feature-icon">🩺</div>
-                            <h3>Rescue Operations</h3>
-                            <p>
-                                Follow rescue cases, response progress and
-                                recorded outcomes.
-                            </p>
-                            <span class="coming-soon">Coming soon</span>
-                        </article>
+                        <a class="workspace-card programme-card" href="/programmes">
+                            <div class="workspace-card-top">
+                                <span class="workspace-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" focusable="false"><path d="M19.8 4.3C11.5 4.1 6 7 6 13.1a5.2 5.2 0 0 0 5.2 5.2c6.1 0 9-5.5 8.6-14Z"></path><path d="M4 20c2.8-5.2 6.4-8.3 11.1-10.7"></path><path d="M5 5.5c.7 1.1 1.5 2.2 2.4 3.1"></path></svg>
+                                </span>
+                                <span class="workspace-number">03</span>
+                            </div>
+                            <span class="workspace-tag">CONSERVATION INITIATIVES</span>
+                            <h3>Programmes</h3>
+                            <p>Explore conservation programmes, review activities and keep track of ongoing initiatives.</p>
+                            <span class="workspace-link">Open programmes <span aria-hidden="true">↗</span></span>
+                        </a>
                     </div>
                 </section>
+
+                <footer class="dashboard-footer">
+                    <span class="footer-mark" aria-hidden="true">🌱</span>
+                    <p><strong>Protect wildlife. Preserve nature.</strong><br>Thank you for being part of the WildGuard conservation effort.</p>
+                    <span class="footer-caption">WILDGUARD <span>•</span> CONSERVATION PLATFORM</span>
+                </footer>
             </main>
         </div>
     </div>

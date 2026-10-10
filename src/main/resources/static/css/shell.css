@@ -539,6 +539,19 @@ button {
     text-transform: uppercase;
 }
 
+css
+.feature-action {
+    display: inline-block;
+    margin-top: 12px;
+    color: #24734c;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.feature-action:hover {
+    text-decoration: underline;
+}
+
 .detail-item p {
     overflow-wrap: anywhere;
     color: var(--forest-900);
