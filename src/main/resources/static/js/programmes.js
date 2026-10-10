@@ -8,6 +8,8 @@ const programmeRole = currentRole();
 const canEditProgrammes = programmeRole === "ADMIN" || programmeRole === "FOREST_OFFICER";
 
 let openProgrammeId = null;
+let openProgrammeData = null;   // the programme shown in the detail panel
+let editingId = null;           // id of the programme being edited, null = the form adds a new one
 
 async function loadProgrammes() {
     try {
@@ -81,6 +83,10 @@ async function openProgramme(id, scroll) {
 
 function renderProgramme(programme) {
     programmePanel.hidden = false;
+    openProgrammeData = programme;
+    // edit and delete are only for officers and admins
+    document.getElementById("editProgramme").hidden = !canEditProgrammes;
+    document.getElementById("deleteProgramme").hidden = !canEditProgrammes;
 
     document.getElementById("detailName").textContent =
         programme.programmeCode + " " + programme.name;
@@ -132,26 +138,91 @@ document.getElementById("activityForm").addEventListener("submit", async functio
     }
 });
 
+// the same form is used to add a new programme and to edit an old one
 document.getElementById("programmeForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    try {
-        const saved = await conservationRequest("/api/programmes", "POST", {
-            name: document.getElementById("programmeName").value.trim(),
-            description: document.getElementById("programmeDescription").value.trim() || null,
-            targetQuantity: Number(document.getElementById("targetQuantity").value),
-            unit: document.getElementById("unit").value.trim() || null,
-            startDate: document.getElementById("startDate").value || null,
-            dueDate: document.getElementById("dueDate").value || null,
-            status: "PLANNED",
-            ownerStaffName: document.getElementById("ownerStaffName").value.trim() || null
-        });
+    const form = {
+        name: document.getElementById("programmeName").value.trim(),
+        description: document.getElementById("programmeDescription").value.trim() || null,
+        targetQuantity: Number(document.getElementById("targetQuantity").value),
+        unit: document.getElementById("unit").value.trim() || null,
+        startDate: document.getElementById("startDate").value || null,
+        dueDate: document.getElementById("dueDate").value || null,
+        status: document.getElementById("programmeStatus").value,
+        ownerStaffName: document.getElementById("ownerStaffName").value.trim() || null,
+        // team is not in the form, so keep the old one while editing
+        team: editingId ? openProgrammeData.team : null
+    };
 
-        event.target.reset();
-        showPageMessage("Programme " + saved.programmeCode + " started.");
+    try {
+        let saved;
+
+        if (editingId) {
+            saved = await conservationRequest("/api/programmes/" + editingId, "PUT", form);
+            showPageMessage("Programme " + saved.programmeCode + " updated.");
+        } else {
+            saved = await conservationRequest("/api/programmes", "POST", form);
+            showPageMessage("Programme " + saved.programmeCode + " started.");
+        }
+
+        stopEditing();
         openProgrammeId = saved.id;
         await loadProgrammes();
         openProgramme(saved.id, false);
+    } catch (error) {
+        showPageMessage(error.message, true);
+    }
+});
+
+// Edit button: put the values of the open programme into the form at the top
+document.getElementById("editProgramme").addEventListener("click", function () {
+    const programme = openProgrammeData;
+    editingId = programme.id;
+
+    document.getElementById("programmeName").value = programme.name;
+    document.getElementById("programmeDescription").value = programme.description || "";
+    document.getElementById("targetQuantity").value = programme.targetQuantity;
+    document.getElementById("unit").value = programme.unit || "";
+    document.getElementById("startDate").value = programme.startDate || "";
+    document.getElementById("dueDate").value = programme.dueDate || "";
+    document.getElementById("programmeStatus").value = programme.status;
+    document.getElementById("ownerStaffName").value = programme.ownerStaffName || "";
+
+    document.getElementById("programmeFormTitle").textContent = "Edit " + programme.programmeCode;
+    document.getElementById("programmeSubmit").textContent = "Save Changes";
+    document.getElementById("cancelEdit").hidden = false;
+    document.getElementById("newProgrammeCard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("cancelEdit").addEventListener("click", stopEditing);
+
+// puts the form back to "add new" mode
+function stopEditing() {
+    editingId = null;
+    document.getElementById("programmeForm").reset();
+    document.getElementById("programmeFormTitle").textContent = "Start a Programme";
+    document.getElementById("programmeSubmit").textContent = "Start Programme";
+    document.getElementById("cancelEdit").hidden = true;
+}
+
+// Delete button: removes the programme and its recorded activities
+document.getElementById("deleteProgramme").addEventListener("click", async function () {
+    const programme = openProgrammeData;
+
+    if (!confirm("Delete " + programme.programmeCode + " " + programme.name
+            + " and all its recorded activities?")) {
+        return;
+    }
+
+    try {
+        const answer = await conservationRequest("/api/programmes/" + programme.id, "DELETE");
+        stopEditing();
+        openProgrammeId = null;
+        openProgrammeData = null;
+        programmePanel.hidden = true;
+        showPageMessage(answer.message);
+        loadProgrammes();
     } catch (error) {
         showPageMessage(error.message, true);
     }

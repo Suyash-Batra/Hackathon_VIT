@@ -46,7 +46,7 @@
             </section>
 
             <section class="card form-card" id="newProgrammeCard">
-                <h3>Start a Programme</h3>
+                <h3 id="programmeFormTitle">Start a Programme</h3>
                 <form id="programmeForm">
                     <div class="form-grid">
                         <label>
@@ -74,13 +74,23 @@
                             Owner
                             <input id="ownerStaffName" type="text" maxlength="120" placeholder="Person responsible">
                         </label>
+                        <label>
+                            Status
+                            <select id="programmeStatus">
+                                <option value="PLANNED">Planned</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="ON_HOLD">On hold</option>
+                                <option value="COMPLETED">Completed</option>
+                            </select>
+                        </label>
                         <label class="wide">
                             Description (optional)
                             <input id="programmeDescription" type="text" maxlength="1000">
                         </label>
                     </div>
                     <div class="form-actions">
-                        <button type="submit">Start Programme</button>
+                        <button type="submit" id="programmeSubmit">Start Programme</button>
+                        <button type="button" id="cancelEdit" class="light-button" hidden>Cancel</button>
                     </div>
                 </form>
             </section>
@@ -119,6 +129,10 @@
                 <div class="detail-head">
                     <h2 id="detailName">Programme</h2>
                     <span id="detailStatus"></span>
+                </div>
+                <div class="form-actions" id="programmeActions">
+                    <button type="button" id="editProgramme" class="small-button light-button">Edit</button>
+                    <button type="button" id="deleteProgramme" class="small-button danger-button">Delete</button>
                 </div>
                 <p class="plain-text" id="detailFormula"></p>
 

@@ -1,9 +1,12 @@
 package com.wildguard.conservation.controller;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,6 +65,16 @@ public class ProgrammeController {
     public Programme update(@PathVariable Long id, @RequestBody Programme form, HttpServletRequest request) {
         login.check(request, "ADMIN", "FOREST_OFFICER");
         return programmeService.update(id, form);
+    }
+
+    // deletes the programme together with its activities
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(@PathVariable Long id, HttpServletRequest request) {
+        login.check(request, "ADMIN", "FOREST_OFFICER");
+        String code = programmeService.delete(id);
+        Map<String, String> answer = new LinkedHashMap<>();
+        answer.put("message", "Programme " + code + " deleted.");
+        return answer;
     }
 
     // the answer already has the new progress %
