@@ -22,45 +22,41 @@
 
     const path = window.location.pathname.replace(/\/$/, "") || "/";
 
-    const menus = {
-        ADMIN: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "User Management", icon: "♙", href: "/admin" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" }
-        ],
+	const menus = {
+	    ADMIN: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "User Management", icon: "♙", href: "/admin" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" }
+	    ],
 
-        USER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-        ],
+	    USER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" }
+	    ],
 
-        FOREST_OFFICER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Reports", icon: "▤", href: "/reports" }
-        ],
+	    FOREST_OFFICER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" }
+	    ],
 
-        RESCUE_OFFICER: [
-            { label: "Dashboard", icon: "⌂", href: "/dashboard" },
-            { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-            { label: "Animals", icon: "🐘", href: "/animals" },
-            { label: "Habitats", icon: "🌳", href: "/habitats" },
-            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
-            { label: "Resources", icon: "▣", href: "/resources" },
-            { label: "Programmes", icon: "♧", href: "/programmes" },
-            { label: "Reports", icon: "▤", href: "/reports" }
-        ]
-    };
+	    RESCUE_OFFICER: [
+	        { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+	        { label: "Animals", icon: "♧", href: "/animals" },
+	        { label: "Habitats", icon: "♣", href: "/habitats" },
+	        { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+	        { label: "Resources", icon: "▤", href: "/resources" },
+	        { label: "Programmes", icon: "✳", href: "/programmes" }
+	    ]
+	};
 
     const activeMenus = menus[role] || menus.USER;
     const navigation = document.getElementById("sideNav");
