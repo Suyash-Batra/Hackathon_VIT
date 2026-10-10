@@ -1,5 +1,8 @@
 package com.wildguard.conservation.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 // A vehicle or equipment (table name is "resources").
 // I named the class ResourceItem because Resource is already a class name in Spring.
@@ -34,6 +38,12 @@ public class ResourceItem {
     private ResourceStatus status;
 
     private String notes;
+
+    // not columns: who has the resource now, and its allocation history (filled by the service)
+    @Transient
+    private ResourceAllocation currentAllocation;
+    @Transient
+    private List<ResourceAllocation> allocations = new ArrayList<>();
 
     // getters and setters
 
@@ -83,5 +93,31 @@ public class ResourceItem {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public ResourceAllocation getCurrentAllocation() {
+        return currentAllocation;
+    }
+
+    public void setCurrentAllocation(ResourceAllocation currentAllocation) {
+        this.currentAllocation = currentAllocation;
+    }
+
+    public List<ResourceAllocation> getAllocations() {
+        return allocations;
+    }
+
+    public void setAllocations(List<ResourceAllocation> allocations) {
+        this.allocations = allocations;
+    }
+
+    // AVAILABLE = free to use, ALLOCATED = somebody is using it, MAINTENANCE = under repair
+    public enum ResourceStatus {
+        AVAILABLE, ALLOCATED, MAINTENANCE
+    }
+
+    // type of resource
+    public enum ResourceCategory {
+        VEHICLE, GPS_DEVICE, CAMERA, RADIO, MEDICAL_KIT, OTHER
     }
 }

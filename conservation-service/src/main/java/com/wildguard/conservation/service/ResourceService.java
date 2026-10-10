@@ -7,26 +7,20 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wildguard.conservation.service.ActivityLog;
-import com.wildguard.conservation.error.ApiException;
-import com.wildguard.conservation.security.Caller;
-import com.wildguard.conservation.security.Role;
 import com.wildguard.conservation.client.ServiceGateway;
-import com.wildguard.conservation.dto.AllocationDto;
-import com.wildguard.conservation.dto.AllocationRequest;
-import com.wildguard.conservation.dto.ResourceDto;
-import com.wildguard.conservation.dto.ResourceRequest;
-import com.wildguard.conservation.entity.AllocationTarget;
 import com.wildguard.conservation.entity.RescueCase;
+import com.wildguard.conservation.entity.ResourceAllocation.AllocationTarget;
 import com.wildguard.conservation.entity.ResourceAllocation;
-import com.wildguard.conservation.entity.ResourceCategory;
+import com.wildguard.conservation.entity.ResourceItem.ResourceCategory;
+import com.wildguard.conservation.entity.ResourceItem.ResourceStatus;
 import com.wildguard.conservation.entity.ResourceItem;
-import com.wildguard.conservation.entity.ResourceStatus;
 import com.wildguard.conservation.repository.ResourceAllocationRepository;
 import com.wildguard.conservation.repository.ResourceItemRepository;
+import com.wildguard.conservation.util.ErrorHandler.AppException;
+import com.wildguard.conservation.util.LoginCheck.LoginUser;
+import com.wildguard.conservation.util.TextUtil;
 
-// Vehicles and equipment, and giving them to a patrol or rescue case.
-// The main feature here is ALLOCATION VALIDATION: one resource cannot be given twice.
+// vehicles and equipment, and giving them to a patrol or a rescue case
 @Service
 public class ResourceService {
 
@@ -34,24 +28,17 @@ public class ResourceService {
     private ResourceAllocationRepository allocationRepository;
     private RescueService rescueService;
     private ServiceGateway gateway;
-    private ActivityLog audit;
 
-    public ResourceService(ResourceItemRepository resourceRepository,
-            ResourceAllocationRepository allocationRepository, RescueService rescueService, ServiceGateway gateway,
-            ActivityLog audit) {
+    public ResourceService(ResourceItemRepository resourceRepository, ResourceAllocationRepository allocationRepository,
+            RescueService rescueService, ServiceGateway gateway) {
         this.resourceRepository = resourceRepository;
         this.allocationRepository = allocationRepository;
         this.rescueService = rescueService;
         this.gateway = gateway;
-        this.audit = audit;
     }
 
-    // ---------- inventory ----------
-
-    // list of resources, category and status filters are optional
-    @Transactional(readOnly = true)
-    public List<ResourceDto> list(ResourceCategory category, ResourceStatus status) {
-        List<ResourceDto> result = new ArrayList<>();
+    public List<ResourceItem> list(ResourceCategory category, ResourceStatus status) {
+        List<ResourceItem> result = new ArrayList<>();
         for (ResourceItem resource : resourceRepository.findAllByOrderByResourceCodeAsc()) {
             if (category != null && resource.getCategory() != category) {
                 continue;
@@ -59,265 +46,194 @@ public class ResourceService {
             if (status != null && resource.getStatus() != status) {
                 continue;
             }
-            result.add(toDto(resource, false));
+            result.add(prepare(resource, false));
         }
         return result;
     }
 
-    @Transactional(readOnly = true)
-    public ResourceDto get(Long id) {
-        return toDto(findResource(id), true);
+    public ResourceItem get(Long id) {
+        return prepare(find(id), true);
     }
 
     @Transactional
-    public ResourceDto create(ResourceRequest request) {
-        String code = request.getResourceCode().trim().toUpperCase();
-        if (resourceRepository.existsByResourceCodeIgnoreCase(code)) {
-            throw ApiException.conflict("Resource code " + code + " is already used.");
-        }
+    public ResourceItem create(ResourceItem form) {
         ResourceItem resource = new ResourceItem();
-        resource.setResourceCode(code);
-        resource.setCategory(request.getCategory());
-        resource.setName(request.getName().trim());
-        resource.setNotes(TextUtil.clean(request.getNotes()));
+        copyFields(resource, form);
         resource.setStatus(ResourceStatus.AVAILABLE); // a new resource is free
         resource = resourceRepository.save(resource);
-
-        audit.publish("RESOURCE_CREATED", "RESOURCE", resource.getResourceCode(),
-                "Resource " + resource.getResourceCode() + " (" + resource.getName() + ") added.");
-        return toDto(resource, false);
+        System.out.println("[RESOURCE] " + resource.getResourceCode() + " added");
+        return prepare(resource, false);
     }
 
     @Transactional
-    public ResourceDto update(Long id, ResourceRequest request) {
-        ResourceItem resource = findResource(id);
-        String code = request.getResourceCode().trim().toUpperCase();
-        // if the code was changed, the new code must not be used by another resource
-        if (!code.equalsIgnoreCase(resource.getResourceCode()) && resourceRepository.existsByResourceCodeIgnoreCase(code)) {
-            throw ApiException.conflict("Resource code " + code + " is already used.");
-        }
-        resource.setResourceCode(code);
-        resource.setCategory(request.getCategory());
-        resource.setName(request.getName().trim());
-        resource.setNotes(TextUtil.clean(request.getNotes()));
+    public ResourceItem update(Long id, ResourceItem form) {
+        ResourceItem resource = find(id);
+        copyFields(resource, form);
         resourceRepository.save(resource);
-        return toDto(resource, false);
+        return prepare(resource, false);
     }
 
     // send to maintenance or bring back. ALLOCATED cannot be set here, only by allocating
     @Transactional
-    public ResourceDto changeStatus(Long id, ResourceStatus status) {
-        ResourceItem resource = lockResource(id);
+    public ResourceItem changeStatus(Long id, ResourceStatus status) {
+        ResourceItem resource = find(id);
         if (status == ResourceStatus.ALLOCATED) {
-            throw ApiException.badRequest("Use the allocation form to allocate a resource.");
+            throw new AppException(400, "Use the allocation form to allocate a resource.");
         }
-        if (allocationRepository.findFirstByResourceIdAndReleasedAtIsNull(id) != null) {
-            throw ApiException.conflict(resource.getResourceCode() + " is allocated. Release it before changing its status.");
+        if (allocationRepository.findFirstByResourceAndReleasedAtIsNull(resource) != null) {
+            throw new AppException(409, resource.getResourceCode() + " is allocated. Release it before changing its status.");
         }
         resource.setStatus(status);
         resourceRepository.save(resource);
-        audit.publish("RESOURCE_STATUS_CHANGED", "RESOURCE", resource.getResourceCode(),
-                resource.getResourceCode() + " is now " + TextUtil.label(status) + ".");
-        return toDto(resource, false);
+        return prepare(resource, false);
     }
 
-    // ---------- allocation ----------
-
-    @Transactional(readOnly = true)
-    public List<AllocationDto> listAllocations(Boolean activeOnly) {
-        List<ResourceAllocation> allocations;
+    public List<ResourceAllocation> listAllocations(Boolean activeOnly) {
         if (activeOnly != null && activeOnly) {
-            allocations = allocationRepository.findByReleasedAtIsNullOrderByAllocatedAtDesc();
-        } else {
-            allocations = allocationRepository.findAllByOrderByAllocatedAtDesc();
+            return allocationRepository.findByReleasedAtIsNullOrderByAllocatedAtDesc();
         }
-        List<AllocationDto> result = new ArrayList<>();
-        for (ResourceAllocation allocation : allocations) {
-            result.add(toAllocationDto(allocation));
-        }
-        return result;
+        return allocationRepository.findAllByOrderByAllocatedAtDesc();
     }
 
-    // Gives a resource to a patrol or rescue case. This is the allocation validation.
-    // Steps:
-    //  1. lock the resource row so two users cannot do this at the same moment
-    //  2. a resource under maintenance cannot be given
-    //  3. if it is already given to someone -> error 409 (double allocation is stopped here)
-    //     only an officer/admin can tick "override", then the old allocation is released first
-    //  4. check the patrol / rescue case really exists and is still running
-    //  5. save the allocation and mark the resource as ALLOCATED
+    // Gives a resource to a patrol or a rescue case.
+    //  1. resource under maintenance cannot be given
+    //  2. already with someone -> 409. only officer/admin can override, then the old one is released first
+    //  3. the patrol / rescue case must exist and still be running
+    //  4. save the allocation and mark the resource ALLOCATED
+    // (the controller method is synchronized, so two users cannot be inside here at the same time)
     @Transactional
-    public AllocationDto allocate(AllocationRequest request) {
-        Caller caller = Caller.current();
+    public ResourceAllocation allocate(AllocationRequest request, LoginUser user) {
+        if (request.resourceId == null || request.targetType == null || TextUtil.clean(request.targetId) == null) {
+            throw new AppException(400, "Choose the resource and the patrol or rescue case.");
+        }
+        ResourceItem resource = find(request.resourceId);
         LocalDateTime now = LocalDateTime.now();
 
-        // step 1
-        ResourceItem resource = lockResource(request.getResourceId());
-
-        // step 2
+        // 1
         if (resource.getStatus() == ResourceStatus.MAINTENANCE) {
-            throw ApiException.conflict(resource.getResourceCode() + " is under maintenance and cannot be allocated.");
+            throw new AppException(409, resource.getResourceCode() + " is under maintenance and cannot be allocated.");
         }
 
-        // step 3
+        // 2
         boolean overrideUsed = false;
-        ResourceAllocation current = allocationRepository.findFirstByResourceIdAndReleasedAtIsNull(resource.getId());
+        ResourceAllocation current = allocationRepository.findFirstByResourceAndReleasedAtIsNull(resource);
         if (current != null) {
-            boolean canOverride = caller.hasRole(Role.ADMIN, Role.FOREST_OFFICER);
-            boolean wantsOverride = request.getOverride() != null && request.getOverride();
-            if (!wantsOverride || !canOverride) {
-                String message = resource.getResourceCode() + " is already allocated to " + current.getTargetCode()
-                        + ". Release it first";
-                if (canOverride) {
-                    message = message + " or tick the override box.";
-                } else {
-                    message = message + ".";
-                }
-                throw ApiException.conflict(message);
+            boolean canOverride = user.is("ADMIN", "FOREST_OFFICER");
+            boolean wantsOverride = request.override != null && request.override;
+            if (!canOverride || !wantsOverride) {
+                throw new AppException(409, resource.getResourceCode() + " is already allocated to "
+                        + current.getTargetCode() + ". Release it first" + (canOverride ? " or tick the override box." : "."));
             }
-            // override: release the old one first
             current.setReleasedAt(now);
-            current.setReleasedByName(caller.displayName() + " (override)");
-            // saveAndFlush writes it to the database right now. we need that because the database
-            // has a unique index that allows only one active allocation per resource
+            current.setReleasedByName(user.email + " (override)");
+            // saveAndFlush writes it now, because the database allows only one active allocation per resource
             allocationRepository.saveAndFlush(current);
             overrideUsed = true;
         }
 
-        // step 4
-        String targetCode = checkTarget(request.getTargetType(), request.getTargetId());
+        // 3
+        String targetId = request.targetId.trim();
+        String targetCode;
+        if (request.targetType == AllocationTarget.PATROL) {
+            targetCode = gateway.checkPatrol(targetId, user.token); // patrol is in operations-service
+        } else {
+            targetCode = checkRescueCase(targetId); // rescue case is in my own table
+        }
 
-        // step 5
+        // 4
         ResourceAllocation allocation = new ResourceAllocation();
         allocation.setResource(resource);
-        allocation.setTargetType(request.getTargetType());
-        allocation.setTargetId(request.getTargetId().trim());
+        allocation.setTargetType(request.targetType);
+        allocation.setTargetId(targetId);
         allocation.setTargetCode(targetCode);
         allocation.setAllocatedAt(now);
-        allocation.setAllocatedByName(caller.displayName());
-        allocation.setNotes(TextUtil.clean(request.getNotes()));
+        allocation.setAllocatedByName(user.email);
+        allocation.setNotes(TextUtil.optional(request.notes, "Notes", 500));
         allocation.setOverrideUsed(overrideUsed);
         allocation = allocationRepository.save(allocation);
 
         resource.setStatus(ResourceStatus.ALLOCATED);
         resourceRepository.save(resource);
-
-        String message = resource.getResourceCode() + " allocated to " + targetCode + " by " + caller.displayName();
-        if (overrideUsed) {
-            message = message + " (override of the previous allocation)";
-        }
-        audit.publish("RESOURCE_ALLOCATED", "RESOURCE", resource.getResourceCode(), message + ".");
-        return toAllocationDto(allocation);
+        System.out.println("[RESOURCE] " + resource.getResourceCode() + " allocated to " + targetCode + " by " + user.email);
+        return allocation;
     }
 
-    // Returns the resource. We set the release time and the resource becomes AVAILABLE again.
+    // resource comes back and is free again
     @Transactional
-    public AllocationDto release(Long allocationId) {
-        Caller caller = Caller.current();
+    public ResourceAllocation release(Long allocationId, LoginUser user) {
         ResourceAllocation allocation = allocationRepository.findById(allocationId).orElse(null);
         if (allocation == null) {
-            throw ApiException.notFound("Allocation " + allocationId + " was not found.");
+            throw new AppException(404, "Allocation " + allocationId + " was not found.");
         }
         if (allocation.getReleasedAt() != null) {
-            throw ApiException.conflict("This allocation was already released.");
+            throw new AppException(409, "This allocation was already released.");
         }
-        ResourceItem resource = lockResource(allocation.getResource().getId());
         allocation.setReleasedAt(LocalDateTime.now());
-        allocation.setReleasedByName(caller.displayName());
+        allocation.setReleasedByName(user.email);
         allocationRepository.save(allocation);
 
+        ResourceItem resource = allocation.getResource();
         resource.setStatus(ResourceStatus.AVAILABLE);
         resourceRepository.save(resource);
-
-        audit.publish("RESOURCE_RELEASED", "RESOURCE", resource.getResourceCode(),
-                resource.getResourceCode() + " released from " + allocation.getTargetCode() + " by "
-                        + caller.displayName() + ".");
-        return toAllocationDto(allocation);
+        System.out.println("[RESOURCE] " + resource.getResourceCode() + " released by " + user.email);
+        return allocation;
     }
 
     // ---------- helper methods ----------
 
-    // Checks the patrol or rescue case and returns its code (PAT-205 or RES-031).
-    // A patrol is in operations-service so we ask it by REST. A rescue case is in our own table.
-    private String checkTarget(AllocationTarget targetType, String targetId) {
-        if (targetType == AllocationTarget.PATROL) {
-            return gateway.checkPatrol(targetId);
+    private ResourceItem find(Long id) {
+        ResourceItem resource = resourceRepository.findById(id).orElse(null);
+        if (resource == null) {
+            throw new AppException(404, "Resource " + id + " was not found.");
         }
+        return resource;
+    }
 
-        // for a rescue case the id is the number of our own row
+    // used by create and update. the code must not be used by another resource
+    private void copyFields(ResourceItem resource, ResourceItem form) {
+        String code = TextUtil.required(form.getResourceCode(), "Code", 20).toUpperCase();
+        if (!code.equalsIgnoreCase(resource.getResourceCode()) && resourceRepository.existsByResourceCodeIgnoreCase(code)) {
+            throw new AppException(409, "Resource code " + code + " is already used.");
+        }
+        if (form.getCategory() == null) {
+            throw new AppException(400, "Category is required.");
+        }
+        resource.setResourceCode(code);
+        resource.setCategory(form.getCategory());
+        resource.setName(TextUtil.required(form.getName(), "Name", 120));
+        resource.setNotes(TextUtil.optional(form.getNotes(), "Notes", 500));
+    }
+
+    // returns the code of the rescue case (RES-031). the case must exist and be open
+    private String checkRescueCase(String targetId) {
         RescueCase rescue;
         try {
-            rescue = rescueService.findCase(Long.valueOf(targetId.trim()));
-        } catch (NumberFormatException | ApiException ex) {
-            throw ApiException.badRequest("Rescue case " + targetId + " does not exist.");
+            rescue = rescueService.find(Long.valueOf(targetId));
+        } catch (NumberFormatException | AppException ex) {
+            throw new AppException(400, "Rescue case " + targetId + " does not exist.");
         }
-        if (!rescue.getStage().isActive()) {
-            throw ApiException.conflict(rescue.getRescueCode() + " is closed; resources can only be allocated to active cases.");
+        if (!rescue.isActive()) {
+            throw new AppException(409, rescue.getRescueCode() + " is closed; resources can only be allocated to active cases.");
         }
         return rescue.getRescueCode();
     }
 
-    private ResourceItem findResource(Long id) {
-        ResourceItem resource = resourceRepository.findById(id).orElse(null);
-        if (resource == null) {
-            throw ApiException.notFound("Resource " + id + " was not found.");
-        }
-        return resource;
-    }
-
-    // same as findResource but it also locks the row
-    private ResourceItem lockResource(Long id) {
-        ResourceItem resource = resourceRepository.findByIdForUpdate(id);
-        if (resource == null) {
-            throw ApiException.notFound("Resource " + id + " was not found.");
-        }
-        return resource;
-    }
-
-    // entity -> DTO for a resource. detail = true also adds the allocation history
-    private ResourceDto toDto(ResourceItem resource, boolean detail) {
-        ResourceDto dto = new ResourceDto();
-        dto.setId(resource.getId());
-        dto.setResourceCode(resource.getResourceCode());
-        dto.setCategory(resource.getCategory());
-        dto.setName(resource.getName());
-        dto.setStatus(resource.getStatus());
-        dto.setNotes(resource.getNotes());
-
-        ResourceAllocation current = allocationRepository.findFirstByResourceIdAndReleasedAtIsNull(resource.getId());
-        if (current != null) {
-            dto.setCurrentAllocation(toAllocationDto(current));
-        }
-
-        List<AllocationDto> history = new ArrayList<>();
+    // adds who has the resource now, and for the detail page the full history
+    private ResourceItem prepare(ResourceItem resource, boolean detail) {
+        resource.setCurrentAllocation(allocationRepository.findFirstByResourceAndReleasedAtIsNull(resource));
         if (detail) {
-            for (ResourceAllocation allocation : allocationRepository.findByResourceIdOrderByAllocatedAtDesc(resource.getId())) {
-                history.add(toAllocationDto(allocation));
-            }
+            resource.setAllocations(allocationRepository.findByResourceOrderByAllocatedAtDesc(resource));
         }
-        dto.setAllocations(history);
-        return dto;
+        return resource;
     }
 
-    // entity -> DTO for an allocation. static so RescueService can use it too
-    public static AllocationDto toAllocationDto(ResourceAllocation allocation) {
-        ResourceItem resource = allocation.getResource();
-        AllocationDto dto = new AllocationDto();
-        dto.setId(allocation.getId());
-        dto.setResourceId(resource.getId());
-        dto.setResourceCode(resource.getResourceCode());
-        dto.setResourceName(resource.getName());
-        dto.setCategory(resource.getCategory());
-        dto.setTargetType(allocation.getTargetType());
-        dto.setTargetId(allocation.getTargetId());
-        dto.setTargetCode(allocation.getTargetCode());
-        dto.setAllocatedAt(allocation.getAllocatedAt());
-        dto.setAllocatedByName(allocation.getAllocatedByName());
-        dto.setReleasedAt(allocation.getReleasedAt());
-        dto.setReleasedByName(allocation.getReleasedByName());
-        dto.setNotes(allocation.getNotes());
-        dto.setOverrideUsed(allocation.getOverrideUsed() != null && allocation.getOverrideUsed());
-        dto.setActive(allocation.getReleasedAt() == null);
-        return dto;
+    // what the page sends when a resource is given to a patrol or a rescue case.
+    // override = true : take it from whoever has it now (only officer / admin can do this)
+    public static class AllocationRequest {
+        public Long resourceId;
+        public AllocationTarget targetType;
+        public String targetId;
+        public String notes;
+        public Boolean override;
     }
 }

@@ -1,9 +1,10 @@
 package com.wildguard.conservation.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,80 +15,80 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wildguard.conservation.dto.RescueDto;
-import com.wildguard.conservation.dto.RescueRequest;
-import com.wildguard.conservation.dto.ReviewDecisionRequest;
-import com.wildguard.conservation.dto.ReviewRequest;
-import com.wildguard.conservation.dto.StageChangeRequest;
-import com.wildguard.conservation.dto.TreatmentRequest;
-import com.wildguard.conservation.entity.RescueStage;
+import com.wildguard.conservation.entity.RescueCase.RescueStage;
+import com.wildguard.conservation.entity.RescueCase;
+import com.wildguard.conservation.entity.TreatmentRecord;
 import com.wildguard.conservation.service.RescueService;
+import com.wildguard.conservation.util.ErrorHandler.AppException;
+import com.wildguard.conservation.util.LoginCheck.LoginUser;
+import com.wildguard.conservation.util.LoginCheck;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
-// REST API for rescue cases. All urls start with /api/rescues.
-// The controller only receives the request and calls the service, the logic is in RescueService.
-// @PreAuthorize checks the role of the user, so only the right roles can do each action.
+// REST API for rescue cases. The controller only checks who is calling and passes the work
+// to RescueService. @CrossOrigin lets the pages of the platform app (port 8081) call this service.
 @RestController
 @RequestMapping("/api/rescues")
+@CrossOrigin(origins = "${wildguard.allowed-origins}")
 public class RescueController {
 
     private RescueService rescueService;
+    private LoginCheck login;
 
-    public RescueController(RescueService rescueService) {
+    public RescueController(RescueService rescueService, LoginCheck login) {
         this.rescueService = rescueService;
+        this.login = login;
     }
 
-    // GET /api/rescues  -> list (filters are optional)
+    // GET /api/rescues?stage=REHABILITATION&activeOnly=true   (filters are optional)
     @GetMapping
-    public List<RescueDto> list(@RequestParam(required = false) RescueStage stage,
-            @RequestParam(required = false) Boolean activeOnly,
-            @RequestParam(required = false) String incidentId,
-            @RequestParam(required = false) String animalId) {
-        return rescueService.list(stage, activeOnly, incidentId, animalId);
+    public List<RescueCase> list(@RequestParam(required = false) RescueStage stage,
+            @RequestParam(required = false) Boolean activeOnly, @RequestParam(required = false) String incidentId,
+            @RequestParam(required = false) String animalId, HttpServletRequest request) {
+        LoginUser user = login.check(request);
+        return rescueService.list(stage, activeOnly, incidentId, animalId, user);
     }
 
-    // GET /api/rescues/31  -> one case with timeline
+    // one case with its timeline
     @GetMapping("/{id}")
-    public RescueDto get(@PathVariable Long id) {
-        return rescueService.get(id);
+    public RescueCase get(@PathVariable Long id, HttpServletRequest request) {
+        return rescueService.get(id, login.check(request));
     }
 
-    // POST /api/rescues  -> open a new case (returns 201 Created)
-    // @Valid checks the request, for example summary must not be empty
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','FOREST_OFFICER','RESCUE_OFFICER')")
-    public RescueDto create(@Valid @RequestBody RescueRequest request) {
-        return rescueService.create(request);
+    public RescueCase create(@RequestBody RescueCase form, HttpServletRequest request) {
+        return rescueService.create(form, login.check(request));
     }
 
-    // PATCH /api/rescues/31/stage  -> move to the next stage
     @PatchMapping("/{id}/stage")
-    @PreAuthorize("hasAnyRole('ADMIN','FOREST_OFFICER','RESCUE_OFFICER')")
-    public RescueDto changeStage(@PathVariable Long id, @Valid @RequestBody StageChangeRequest request) {
-        return rescueService.changeStage(id, request);
+    public RescueCase changeStage(@PathVariable Long id, @RequestBody Map<String, String> body, HttpServletRequest request) {
+        return rescueService.changeStage(id, body, login.check(request));
     }
 
-    // POST /api/rescues/31/treatments  -> add a treatment note (only rescue officer or admin)
+    // only rescue officer (or admin) writes treatment notes
     @PostMapping("/{id}/treatments")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','RESCUE_OFFICER')")
-    public RescueDto addTreatment(@PathVariable Long id, @Valid @RequestBody TreatmentRequest request) {
-        return rescueService.addTreatment(id, request);
+    public RescueCase addTreatment(@PathVariable Long id, @RequestBody TreatmentRecord form, HttpServletRequest request) {
+        return rescueService.addTreatment(id, form, login.check(request, "ADMIN", "RESCUE_OFFICER"));
     }
 
-    // rescue officer asks for the release review
+    // rescue officer asks for the release review ...
     @PostMapping("/{id}/release-review")
-    @PreAuthorize("hasAnyRole('ADMIN','RESCUE_OFFICER')")
-    public RescueDto requestReleaseReview(@PathVariable Long id, @Valid @RequestBody ReviewRequest request) {
-        return rescueService.requestReleaseReview(id, request.getNotes());
+    public RescueCase requestReleaseReview(@PathVariable Long id, @RequestBody Map<String, String> body,
+            HttpServletRequest request) {
+        return rescueService.requestReleaseReview(id, body.get("notes"), login.check(request, "ADMIN", "RESCUE_OFFICER"));
     }
 
-    // officer decides. the rescue officer cannot approve his own request because the roles are different here
+    // ... and the forest officer decides. different roles, so nobody approves his own request
     @PostMapping("/{id}/release-decision")
-    @PreAuthorize("hasAnyRole('ADMIN','FOREST_OFFICER')")
-    public RescueDto decideReleaseReview(@PathVariable Long id, @Valid @RequestBody ReviewDecisionRequest request) {
-        return rescueService.decideReleaseReview(id, request);
+    public RescueCase decideReleaseReview(@PathVariable Long id, @RequestBody Map<String, Object> body,
+            HttpServletRequest request) {
+        LoginUser user = login.check(request, "ADMIN", "FOREST_OFFICER");
+        if (!(body.get("approved") instanceof Boolean)) {
+            throw new AppException(400, "Choose approve or reject.");
+        }
+        String notes = body.get("notes") == null ? null : body.get("notes").toString();
+        return rescueService.decideReleaseReview(id, (Boolean) body.get("approved"), notes, user);
     }
 }

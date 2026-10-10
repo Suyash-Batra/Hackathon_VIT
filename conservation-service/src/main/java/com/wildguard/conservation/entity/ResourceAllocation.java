@@ -2,17 +2,20 @@ package com.wildguard.conservation.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import com.wildguard.conservation.entity.ResourceItem.ResourceCategory;
 
 // Says which resource is given to which patrol or rescue case.
 // If releasedAt is null the resource is still in use (active allocation).
@@ -25,7 +28,9 @@ public class ResourceAllocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // the full resource object is not sent in the JSON, only its id, code and name (see below)
+    @JsonIgnore
+    @ManyToOne(optional = false)
     @JoinColumn(name = "resource_id", nullable = false)
     private ResourceItem resource;
 
@@ -43,7 +48,6 @@ public class ResourceAllocation {
 
     @Column(name = "allocated_at", nullable = false)
     private LocalDateTime allocatedAt;
-
 
     @Column(name = "allocated_by_name")
     private String allocatedByName;
@@ -147,5 +151,33 @@ public class ResourceAllocation {
 
     public void setOverrideUsed(Boolean overrideUsed) {
         this.overrideUsed = overrideUsed;
+    }
+
+    // ---- extra values for the page, taken from the linked resource ----
+
+    public Long getResourceId() {
+        return resource.getId();
+    }
+
+    public String getResourceCode() {
+        return resource.getResourceCode();
+    }
+
+    public String getResourceName() {
+        return resource.getName();
+    }
+
+    public ResourceCategory getCategory() {
+        return resource.getCategory();
+    }
+
+    // still in use = not given back yet
+    public boolean isActive() {
+        return releasedAt == null;
+    }
+
+    // a resource can be given to a patrol or to a rescue case
+    public enum AllocationTarget {
+        PATROL, RESCUE_CASE
     }
 }

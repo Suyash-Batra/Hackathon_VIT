@@ -1,9 +1,10 @@
 package com.wildguard.conservation.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,82 +16,96 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wildguard.conservation.dto.AllocationDto;
-import com.wildguard.conservation.dto.AllocationRequest;
-import com.wildguard.conservation.dto.ResourceDto;
-import com.wildguard.conservation.dto.ResourceRequest;
-import com.wildguard.conservation.dto.ResourceStatusRequest;
-import com.wildguard.conservation.entity.ResourceCategory;
-import com.wildguard.conservation.entity.ResourceStatus;
+import com.wildguard.conservation.entity.ResourceAllocation;
+import com.wildguard.conservation.entity.ResourceItem.ResourceCategory;
+import com.wildguard.conservation.entity.ResourceItem.ResourceStatus;
+import com.wildguard.conservation.entity.ResourceItem;
+import com.wildguard.conservation.service.ResourceService.AllocationRequest;
 import com.wildguard.conservation.service.ResourceService;
+import com.wildguard.conservation.util.ErrorHandler.AppException;
+import com.wildguard.conservation.util.LoginCheck.LoginUser;
+import com.wildguard.conservation.util.LoginCheck;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
-// REST API for vehicles/equipment (/api/resources) and for giving them out (/api/allocations).
+// REST API for vehicles / equipment (/api/resources) and for giving them out (/api/allocations).
+// Adding and editing resources is for officer and admin. Allocating is also for the rescue officer.
+//
+// allocate, release and changeStatus are "synchronized": only one thread can run them at a time.
+// So if two users press Allocate for the same vehicle in the same second, the second request
+// waits until the first is saved, and then gets the "already allocated" error.
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "${wildguard.allowed-origins}")
 public class ResourceController {
 
-    // roles that can add/edit resources
-    private static final String INVENTORY_ROLES = "hasAnyRole('ADMIN','FOREST_OFFICER')";
-    // roles that can allocate and release
-    private static final String ALLOCATION_ROLES = "hasAnyRole('ADMIN','FOREST_OFFICER','RESCUE_OFFICER')";
-
     private ResourceService resourceService;
+    private LoginCheck login;
 
-    public ResourceController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService, LoginCheck login) {
         this.resourceService = resourceService;
+        this.login = login;
     }
 
     @GetMapping("/resources")
-    public List<ResourceDto> list(@RequestParam(required = false) ResourceCategory category,
-            @RequestParam(required = false) ResourceStatus status) {
+    public List<ResourceItem> list(@RequestParam(required = false) ResourceCategory category,
+            @RequestParam(required = false) ResourceStatus status, HttpServletRequest request) {
+        login.check(request);
         return resourceService.list(category, status);
     }
 
     @GetMapping("/resources/{id}")
-    public ResourceDto get(@PathVariable Long id) {
+    public ResourceItem get(@PathVariable Long id, HttpServletRequest request) {
+        login.check(request);
         return resourceService.get(id);
     }
 
     @PostMapping("/resources")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize(INVENTORY_ROLES)
-    public ResourceDto create(@Valid @RequestBody ResourceRequest request) {
-        return resourceService.create(request);
+    public ResourceItem create(@RequestBody ResourceItem form, HttpServletRequest request) {
+        login.check(request, "ADMIN", "FOREST_OFFICER");
+        return resourceService.create(form);
     }
 
     @PutMapping("/resources/{id}")
-    @PreAuthorize(INVENTORY_ROLES)
-    public ResourceDto update(@PathVariable Long id, @Valid @RequestBody ResourceRequest request) {
-        return resourceService.update(id, request);
+    public ResourceItem update(@PathVariable Long id, @RequestBody ResourceItem form, HttpServletRequest request) {
+        login.check(request, "ADMIN", "FOREST_OFFICER");
+        return resourceService.update(id, form);
     }
 
-    // maintenance on / off
+    // body: { "status": "MAINTENANCE" } or AVAILABLE
     @PatchMapping("/resources/{id}/status")
-    @PreAuthorize(INVENTORY_ROLES)
-    public ResourceDto changeStatus(@PathVariable Long id, @Valid @RequestBody ResourceStatusRequest request) {
-        return resourceService.changeStatus(id, request.getStatus());
+    public synchronized ResourceItem changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body,
+            HttpServletRequest request) {
+        login.check(request, "ADMIN", "FOREST_OFFICER");
+        ResourceStatus status;
+        try {
+            status = ResourceStatus.valueOf(body.get("status"));
+        } catch (Exception ex) { // status missing or not one of the enum values
+            throw new AppException(400, "Choose a valid status.");
+        }
+        return resourceService.changeStatus(id, status);
     }
 
+    // GET /api/allocations?activeOnly=true -> only what is in use right now
     @GetMapping("/allocations")
-    public List<AllocationDto> allocations(@RequestParam(required = false) Boolean activeOnly) {
+    public List<ResourceAllocation> allocations(@RequestParam(required = false) Boolean activeOnly,
+            HttpServletRequest request) {
+        login.check(request);
         return resourceService.listAllocations(activeOnly);
     }
 
-    // POST /api/allocations -> give a resource to a patrol or rescue case.
-    // returns 201 if ok, and 409 Conflict if the resource is already given to someone
+    // gives 409 if the resource is already with someone else
     @PostMapping("/allocations")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize(ALLOCATION_ROLES)
-    public AllocationDto allocate(@Valid @RequestBody AllocationRequest request) {
-        return resourceService.allocate(request);
+    public synchronized ResourceAllocation allocate(@RequestBody AllocationRequest body, HttpServletRequest request) {
+        LoginUser user = login.check(request);
+        return resourceService.allocate(body, user);
     }
 
-    // PATCH /api/allocations/5/release -> give the resource back
     @PatchMapping("/allocations/{id}/release")
-    @PreAuthorize(ALLOCATION_ROLES)
-    public AllocationDto release(@PathVariable Long id) {
-        return resourceService.release(id);
+    public synchronized ResourceAllocation release(@PathVariable Long id, HttpServletRequest request) {
+        LoginUser user = login.check(request);
+        return resourceService.release(id, user);
     }
 }

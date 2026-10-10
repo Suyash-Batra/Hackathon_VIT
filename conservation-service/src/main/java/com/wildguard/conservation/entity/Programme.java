@@ -1,6 +1,8 @@
 package com.wildguard.conservation.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 // A conservation programme with a target, for example "restore 20 water sources".
 // Notice there is NO progress column. Progress is calculated from the activities.
@@ -44,11 +47,20 @@ public class Programme {
     @Column(nullable = false)
     private ProgrammeStatus status;
 
-
     @Column(name = "owner_staff_name")
     private String ownerStaffName;
 
     private String team;
+
+    // not columns: calculated by ProgrammeService every time (progress is never saved)
+    @Transient
+    private long completedQuantity;
+    @Transient
+    private int progressPercent;
+    @Transient
+    private boolean overdue;
+    @Transient
+    private List<ProgrammeActivity> activities = new ArrayList<>();
 
     // getters and setters
 
@@ -138,5 +150,41 @@ public class Programme {
 
     public void setTeam(String team) {
         this.team = team;
+    }
+
+    public long getCompletedQuantity() {
+        return completedQuantity;
+    }
+
+    public void setCompletedQuantity(long completedQuantity) {
+        this.completedQuantity = completedQuantity;
+    }
+
+    public int getProgressPercent() {
+        return progressPercent;
+    }
+
+    public void setProgressPercent(int progressPercent) {
+        this.progressPercent = progressPercent;
+    }
+
+    public boolean isOverdue() {
+        return overdue;
+    }
+
+    public void setOverdue(boolean overdue) {
+        this.overdue = overdue;
+    }
+
+    public List<ProgrammeActivity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<ProgrammeActivity> activities) {
+        this.activities = activities;
+    }
+
+    public enum ProgrammeStatus {
+        PLANNED, ACTIVE, ON_HOLD, COMPLETED
     }
 }
