@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Resources</title>
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/conservation.css">
+    <script defer src="/js/shell.js"></script>
+    <script defer src="/js/conservation-api.js"></script>
+    <script defer src="/js/resources.js"></script>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="sidebar">
+        <a href="/dashboard" class="brand">
+            <span class="brand-mark">🌿</span>
+            <span>WildGuard<small>Conservation platform</small></span>
+        </a>
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav id="sideNav" aria-label="Main navigation"></nav>
+        <div class="sidebar-footer">
+            <strong>Protect wildlife. Preserve nature.</strong>
+            Vehicles and equipment for patrols and rescues.
+        </div>
+    </aside>
+
+    <div class="main-column">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                <h1 id="pageTitle">Resources</h1>
+            </div>
+            <div class="topbar-actions">
+                <span class="role-chip" id="topRole">User</span>
+                <button id="logoutButton" type="button">Sign out</button>
+            </div>
+        </header>
+
+        <main class="content">
+            <p id="pageMessage" class="page-message" role="status"></p>
+            <section class="page-intro">
+                <h2>Vehicles and Equipment</h2>
+                <p>See what is free, what is in use and who has it. One item can be with only one
+                    patrol or rescue case at a time, so it has to be released before it is given again.</p>
+            </section>
+
+            <section class="stats">
+                <div class="card">
+                    <h3>Available</h3>
+                    <p id="statAvailable">0</p>
+                </div>
+                <div class="card">
+                    <h3>Allocated</h3>
+                    <p id="statAllocated">0</p>
+                </div>
+                <div class="card">
+                    <h3>Under Maintenance</h3>
+                    <p id="statMaintenance">0</p>
+                </div>
+            </section>
+
+            <section class="card form-card" id="newResourceCard">
+                <h3>Add a Resource</h3>
+                <form id="resourceForm">
+                    <div class="form-grid">
+                        <label>
+                            Code
+                            <input id="resourceCode" type="text" maxlength="20" required placeholder="e.g. VH-07">
+                        </label>
+                        <label>
+                            Category
+                            <select id="category" required>
+                                <option value="VEHICLE">Vehicle</option>
+                                <option value="GPS_DEVICE">GPS device</option>
+                                <option value="CAMERA">Camera</option>
+                                <option value="RADIO">Radio</option>
+                                <option value="MEDICAL_KIT">Medical kit</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </label>
+                        <label>
+                            Name
+                            <input id="resourceName" type="text" maxlength="120" required placeholder="e.g. Patrol jeep">
+                        </label>
+                        <label class="wide">
+                            Notes (optional)
+                            <input id="resourceNotes" type="text" maxlength="500">
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Add Resource</button>
+                    </div>
+                </form>
+            </section>
+
+            <section>
+                <div class="list-heading">
+                    <div>
+                        <h2 class="section-heading">Inventory</h2>
+                        <p class="muted">To allocate: choose patrol or rescue case, type its ID and press Allocate.</p>
+                    </div>
+                    <select id="statusFilter" aria-label="Filter by status">
+                        <option value="">All statuses</option>
+                        <option value="AVAILABLE">Available</option>
+                        <option value="ALLOCATED">Allocated</option>
+                        <option value="MAINTENANCE">Under maintenance</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Now with</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="resourceTable">
+                        <tr>
+                            <td colspan="6" class="empty-row">Loading resources...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="detail-panel">
+                <h2 class="section-heading">Allocation History</h2>
+                <p class="muted">The latest 15 allocations, newest first.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Resource</th>
+                            <th>Given to</th>
+                            <th>Allocated</th>
+                            <th>By</th>
+                            <th>Released</th>
+                        </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                        <tr>
+                            <td colspan="5" class="empty-row">Loading history...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard | Programmes</title>
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/conservation.css">
+    <script defer src="/js/shell.js"></script>
+    <script defer src="/js/conservation-api.js"></script>
+    <script defer src="/js/programmes.js"></script>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="sidebar">
+        <a href="/dashboard" class="brand">
+            <span class="brand-mark">🌿</span>
+            <span>WildGuard<small>Conservation platform</small></span>
+        </a>
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav id="sideNav" aria-label="Main navigation"></nav>
+        <div class="sidebar-footer">
+            <strong>Protect wildlife. Preserve nature.</strong>
+            Long-term conservation work and its progress.
+        </div>
+    </aside>
+
+    <div class="main-column">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                <h1 id="pageTitle">Programmes</h1>
+            </div>
+            <div class="topbar-actions">
+                <span class="role-chip" id="topRole">User</span>
+                <button id="logoutButton" type="button">Sign out</button>
+            </div>
+        </header>
+
+        <main class="content">
+            <p id="pageMessage" class="page-message" role="status"></p>
+            <section class="page-intro">
+                <h2>Conservation Programmes</h2>
+                <p>Long-term work with a target number. Progress is calculated from the recorded
+                    activities: completed &divide; target &times; 100.</p>
+            </section>
+
+            <section class="card form-card" id="newProgrammeCard">
+                <h3>Start a Programme</h3>
+                <form id="programmeForm">
+                    <div class="form-grid">
+                        <label>
+                            Name
+                            <input id="programmeName" type="text" maxlength="150" required
+                                   placeholder="e.g. Water Source Restoration">
+                        </label>
+                        <label>
+                            Target quantity
+                            <input id="targetQuantity" type="number" min="1" required placeholder="e.g. 20">
+                        </label>
+                        <label>
+                            Unit
+                            <input id="unit" type="text" maxlength="40" placeholder="e.g. water sources">
+                        </label>
+                        <label>
+                            Start date
+                            <input id="startDate" type="date">
+                        </label>
+                        <label>
+                            Due date
+                            <input id="dueDate" type="date">
+                        </label>
+                        <label>
+                            Owner
+                            <input id="ownerStaffName" type="text" maxlength="120" placeholder="Person responsible">
+                        </label>
+                        <label class="wide">
+                            Description (optional)
+                            <input id="programmeDescription" type="text" maxlength="1000">
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit">Start Programme</button>
+                    </div>
+                </form>
+            </section>
+
+            <section>
+                <div class="list-heading">
+                    <div>
+                        <h2 class="section-heading">Programmes</h2>
+                        <p class="muted">Click a row to see its activities and record new work.</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Programme</th>
+                            <th>Status</th>
+                            <th>Done / Target</th>
+                            <th>Progress</th>
+                            <th>Due</th>
+                            <th>Owner</th>
+                        </tr>
+                        </thead>
+                        <tbody id="programmeTable">
+                        <tr>
+                            <td colspan="7" class="empty-row">Loading programmes...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="detail-panel" id="detailPanel" hidden>
+                <div class="detail-head">
+                    <h2 id="detailName">Programme</h2>
+                    <span id="detailStatus"></span>
+                </div>
+                <p class="plain-text" id="detailFormula"></p>
+
+                <div class="detail-grid">
+                    <div class="card">
+                        <h3>Recorded Activities</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Work done</th>
+                                    <th>Quantity</th>
+                                    <th>Recorded by</th>
+                                </tr>
+                                </thead>
+                                <tbody id="activityTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="side-column">
+                        <div class="card" id="activityCard">
+                            <h3>Record Completed Work</h3>
+                            <form id="activityForm" class="stack-form">
+                                <label>
+                                    What was done
+                                    <input id="activityDescription" type="text" maxlength="500" required>
+                                </label>
+                                <label>
+                                    Quantity completed
+                                    <input id="quantityCompleted" type="number" min="1" required>
+                                </label>
+                                <div class="form-actions">
+                                    <button type="submit">Record Activity</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

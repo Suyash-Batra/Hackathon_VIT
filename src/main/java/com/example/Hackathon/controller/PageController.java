@@ -40,4 +40,21 @@ public class PageController {
     public String riskRadar() {
         return "risk-radar";
     }
+
+    // ---- conservation pages (data comes from conservation-service on port 8084) ----
+
+    @GetMapping("/rescues")
+    public String rescues() {
+        return "rescues";
+    }
+
+    @GetMapping("/resources")
+    public String resources() {
+        return "resources";
+    }
+
+    @GetMapping("/programmes")
+    public String programmes() {
+        return "programmes";
+    }
 }
