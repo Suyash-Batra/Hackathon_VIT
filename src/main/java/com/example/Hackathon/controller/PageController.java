@@ -57,4 +57,14 @@ public class PageController {
     public String programmes() {
         return "programmes";
     }
+    
+    @GetMapping("/animals")
+    public String animal() {
+        return "animal";
+    }
+    
+    @GetMapping("/habitats")
+    public String habitats() {
+        return "habitat";
+    }
 }

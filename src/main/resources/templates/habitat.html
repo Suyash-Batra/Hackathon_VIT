@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#153d2d">
+    <title>WildGuard | Habitats & Water Watchlist</title>
+
+    <link rel="stylesheet" th:href="@{/css/shell.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <script defer th:src="@{/js/shell.js}"></script>
+    <script defer th:src="@{/js/dashboard.js}"></script>
+
+    <style>
+        .watchlist-panel {
+            background: #ffffff;
+            border: 1px solid rgba(21, 61, 45, 0.12);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 28px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(21, 61, 45, 0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        th {
+            background: #f4f7f4;
+            color: #385143;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e9e2;
+            text-align: left;
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #edf2ed;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+        tbody tr:hover {
+            background: #fbfdfc;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .status-normal { background: #e8f5e9; color: #2e7d32; }
+        .status-low { background: #ffebee; color: #c62828; }
+        .btn-toggle-low {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-toggle-low:hover {
+            background: #dc2626;
+            color: #ffffff;
+            border-color: #dc2626;
+        }
+        .btn-toggle-normal {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-toggle-normal:hover {
+            background: #16a34a;
+            color: #ffffff;
+            border-color: #16a34a;
+        }
+    </style>
+</head>
+<body class="app-body dashboard-page">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a href="/dashboard" class="brand" aria-label="WildGuard dashboard">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
+                <span>
+                    WildGuard
+                    <small>Conservation platform</small>
+                </span>
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+            <nav id="sideNav" aria-label="Main navigation"></nav>
+
+            <div class="sidebar-footer">
+                <strong>Protect wildlife. Preserve nature.</strong>
+                Every report can help support conservation efforts.
+            </div>
+        </aside>
+
+        <div class="main-column">
+            <header class="topbar dashboard-topbar">
+                <div class="topbar-heading">
+                    <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                    <h1 id="pageTitle">Habitats & Water Watchlist</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <span class="role-chip" id="topRole">User</span>
+                    <button id="logoutButton" class="signout-button" type="button" onclick="logoutSession()">Sign out <span aria-hidden="true">↗</span></button>
+                </div>
+            </header>
+
+            <main class="content dashboard-content">
+                <section class="dashboard-hero" aria-labelledby="welcomeHeading">
+                    <div class="hero-copy">
+                        <div class="hero-kicker"><span class="hero-kicker-dot"></span> HYDROLOGY & HABITAT INTEGRITY</div>
+                        <h2 id="welcomeHeading">Ecosystem<br>Watchlist.</h2>
+                        <p>Monitor critical zone hydration levels and ecosystem stability parameters feeding into the Risk Radar.</p>
+                        <div class="hero-footnote"><span class="hero-leaf" aria-hidden="true">✦</span> Environmental vitals directly impact regional health.</div>
+                    </div>
+
+                    <div class="hero-art" aria-hidden="true">
+                        <div class="hero-art-glow"></div>
+                        <div class="hero-art-ring ring-one"></div>
+                        <div class="hero-art-ring ring-two"></div>
+                        <div class="hero-art-leaf leaf-one">💧</div>
+                        <div class="hero-art-leaf leaf-two">🌲</div>
+                        <div class="hero-art-center">
+                            <svg viewBox="0 0 100 100" role="presentation" focusable="false">
+                                <path d="M50 12 77 22v23c0 20-12 33-27 43C35 78 23 65 23 45V22L50 12Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M35 52c10-1 22-9 29-23 3 18-4 33-18 38-7 2-13-3-11-10 1-2 1-4 0-5Z" fill="currentColor" opacity=".95"/>
+                                <path d="M37 65c7-11 14-19 25-29" fill="none" stroke="#d8ead7" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="hero-art-star star-one">✳</span>
+                        <span class="hero-art-star star-two">✦</span>
+                    </div>
+                </section>
+
+                <section class="account-panel" aria-labelledby="ecoMetricsHeading">
+                    <div class="account-panel-heading">
+                        <span class="account-heading-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M19.8 4.3C11.5 4.1 6 7 6 13.1a5.2 5.2 0 0 0 5.2 5.2c6.1 0 9-5.5 8.6-14Z"></path><path d="M4 20c2.8-5.2 6.4-8.3 11.1-10.7"></path><path d="M5 5.5c.7 1.1 1.5 2.2 2.4 3.1"></path></svg>
+                        </span>
+                        <div>
+                            <h2 id="ecoMetricsHeading">Eco-System Telemetry</h2>
+                            <p>Real-time zone status</p>
+                        </div>
+                    </div>
+
+                    <div class="account-detail-grid">
+                        <div class="account-detail">
+                            <span class="detail-icon" aria-hidden="true">💧</span>
+                            <div class="detail-copy">
+                                <span class="detail-label">Water Network</span>
+                                <p id="metricWaterCount">Monitoring Active</p>
+                            </div>
+                        </div>
+                        <div class="account-detail">
+                            <span class="detail-icon role-detail-icon" aria-hidden="true">🌲</span>
+                            <div class="detail-copy">
+                                <span class="detail-label">Habitats Logged</span>
+                                <p id="metricHabitatCount">Active Monitoring</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" aria-labelledby="waterHeading">
+                    <div class="workspace-heading-row">
+                        <div>
+                            <p class="section-eyebrow">HYDROLOGICAL MONITORING</p>
+                            <h2 id="waterHeading">Monitored Water Sources</h2>
+                            <p class="workspace-description">Inspect hydration levels and flag water scarcity across conservation sectors.</p>
+                        </div>
+                    </div>
+
+                    <div class="watchlist-panel">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Source Name</th>
+                                        <th>Designated Zone</th>
+                                        <th>Hydration Status</th>
+                                        <th>Risk Impact Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="waterTbody">
+                                    <tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 24px;">Loading water sources...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" aria-labelledby="habitatHeading">
+                    <div class="workspace-heading-row">
+                        <div>
+                            <p class="section-eyebrow">BIOME OBSERVATIONS</p>
+                            <h2 id="habitatHeading">Zone Habitat Conditions</h2>
+                            <p class="workspace-description">Overview of forest cover, canopy condition, and territorial environmental stability.</p>
+                        </div>
+                    </div>
+
+                    <div class="watchlist-panel">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Zone ID</th>
+                                        <th>Habitat Type</th>
+                                        <th>Condition Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="habitatsTbody">
+                                    <tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 24px;">Loading habitats...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="dashboard-footer">
+                    <span class="footer-mark" aria-hidden="true">🌱</span>
+                    <p><strong>Protect wildlife. Preserve nature.</strong><br>Thank you for being part of the WildGuard conservation effort.</p>
+                    <span class="footer-caption">WILDGUARD <span>•</span> CONSERVATION PLATFORM</span>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:8082/api";
+
+        async function loadData() {
+            try {
+                const [wRes, hRes] = await Promise.all([fetch(`${API}/water-sources`), fetch(`${API}/habitats`)]);
+                if (wRes.ok) {
+                    const water = await wRes.json();
+                    const wCountEl = document.getElementById("metricWaterCount");
+                    if (wCountEl) wCountEl.innerText = `${water.length} Sources Tracked`;
+
+                    document.getElementById("waterTbody").innerHTML = water.map(w => {
+                        const isLow = w.status === 'LOW';
+                        return `
+                            <tr>
+                                <td><strong>${w.name}</strong></td>
+                                <td>Zone #${w.zoneId}</td>
+                                <td><span class="status-badge ${isLow ? 'status-low' : 'status-normal'}">${isLow ? 'LOW (Water Stress)' : 'NORMAL'}</span></td>
+                                <td>
+                                    <button class="${isLow ? 'btn-toggle-normal' : 'btn-toggle-low'}" onclick="toggleWater(${w.id}, '${isLow ? 'NORMAL' : 'LOW'}')">
+                                        Mark as ${isLow ? 'NORMAL' : 'LOW'}
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                if (hRes.ok) {
+                    const habitats = await hRes.json();
+                    const hCountEl = document.getElementById("metricHabitatCount");
+                    if (hCountEl) hCountEl.innerText = `${habitats.length} Zones Surveyed`;
+
+                    document.getElementById("habitatsTbody").innerHTML = habitats.map(h => `
+                        <tr>
+                            <td><strong>Zone #${h.zoneId}</strong></td>
+                            <td>${h.habitatType}</td>
+                            <td><span class="status-badge status-normal">${h.conditionStatus}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error("Failed to load habitats/water", e);
+            }
+        }
+
+        async function toggleWater(id, nextStatus) {
+            try {
+                const res = await fetch(`${API}/water-sources/${id}/status?status=${nextStatus}`, { method: "PATCH" });
+                if (res.ok) loadData();
+            } catch (e) { alert("Could not update status."); }
+        }
+
+        function logoutSession() { localStorage.clear(); window.location.href = "/login"; }
+        window.addEventListener("DOMContentLoaded", loadData);
+    </script>
+</body>
+</html>

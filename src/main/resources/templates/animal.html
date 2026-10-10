@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#153d2d">
+    <title>WildGuard | Wildlife Registry</title>
+
+    <link rel="stylesheet" th:href="@{/css/shell.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script defer th:src="@{/js/shell.js}"></script>
+
+    <style>
+        /* Scoped page styles complementing shell.css and dashboard.css */
+        .registry-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid rgba(22, 51, 37, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .registry-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .registry-card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #153d2d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #4b6354;
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #d4ded7;
+            font-size: 13.5px;
+            background: #fbfdfb;
+            color: #172b20;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2d6a4f;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
+        }
+
+        .btn-primary-action {
+            background: #153d2d;
+            color: #ffffff;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-primary-action:hover {
+            background: #1e523d;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #eef2ed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        th {
+            background: #f4f7f4;
+            color: #385143;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e9e2;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #edf2ed;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9fbf9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .status-healthy { background: #e8f5e9; color: #2e7d32; }
+        .status-obs { background: #e3f2fd; color: #1565c0; }
+        .status-injured { background: #fff3e0; color: #ef6c00; }
+        .status-critical { background: #ffebee; color: #c62828; }
+
+        .btn-action {
+            background: #eaf1ec;
+            color: #153d2d;
+            border: 1px solid #cbdad0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: #153d2d;
+            color: #ffffff;
+            border-color: #153d2d;
+        }
+
+        /* Modal styling matching theme */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 38, 27, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            width: 330px;
+            text-align: center;
+            border: 1px solid rgba(22, 51, 37, 0.1);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .modal-qr-box {
+            display: flex;
+            justify-content: center;
+            margin: 18px 0;
+            background: #f6faf7;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px dashed #c0d3c6;
+        }
+
+        .btn-close {
+            width: 100%;
+            background: #153d2d;
+            color: #ffffff;
+            border: none;
+            padding: 11px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-close:hover {
+            background: #1e523d;
+        }
+    </style>
+</head>
+<body class="app-body dashboard-page">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a href="/dashboard" class="brand" aria-label="WildGuard dashboard">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
+                <span>
+                    WildGuard
+                    <small>Conservation platform</small>
+                </span>
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+            <nav id="sideNav" aria-label="Main navigation"></nav>
+
+            <div class="sidebar-footer">
+                <strong>Protect wildlife. Preserve nature.</strong>
+                Every report and observation supports field conservation efforts.
+            </div>
+        </aside>
+
+        <div class="main-column">
+            <header class="topbar dashboard-topbar">
+                <div class="topbar-heading">
+                    <p class="eyebrow">WILDLIFE CONSERVATION PLATFORM</p>
+                    <h1 id="pageTitle">Wildlife Records</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <span class="role-chip" id="topRole">Admin</span>
+                    <button id="logoutButton" class="signout-button" type="button" onclick="logoutSession()">Sign out <span aria-hidden="true">↗</span></button>
+                </div>
+            </header>
+
+            <main class="content dashboard-content">
+                <!-- Hero Section matching Dashboard -->
+                <section class="dashboard-hero" aria-labelledby="welcomeHeading">
+                    <div class="hero-copy">
+                        <div class="hero-kicker"><span class="hero-kicker-dot"></span> REGISTRY & SPECIMEN MONITORING</div>
+                        <h2 id="welcomeHeading">Tracked Wildlife<br>Registry.</h2>
+                        <p>Register field specimens, update clinical conditions, and generate verified QR passports for active monitoring.</p>
+                        <div class="hero-footnote"><span class="hero-leaf" aria-hidden="true">✦</span> Real-time identification and clinical tracking.</div>
+                    </div>
+
+                    <div class="hero-art" aria-hidden="true">
+                        <div class="hero-art-glow"></div>
+                        <div class="hero-art-ring ring-one"></div>
+                        <div class="hero-art-ring ring-two"></div>
+                        <div class="hero-art-leaf leaf-one">🌿</div>
+                        <div class="hero-art-leaf leaf-two">🐾</div>
+                        <div class="hero-art-center">
+                            <svg viewBox="0 0 100 100" role="presentation" focusable="false">
+                                <path d="M50 12 77 22v23c0 20-12 33-27 43C35 78 23 65 23 45V22L50 12Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="M35 52c10-1 22-9 29-23 3 18-4 33-18 38-7 2-13-3-11-10 1-2 1-4 0-5Z" fill="currentColor" opacity=".95"/>
+                                <path d="M37 65c7-11 14-19 25-29" fill="none" stroke="#d8ead7" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="hero-art-star star-one">✳</span>
+                        <span class="hero-art-star star-two">✦</span>
+                    </div>
+                </section>
+
+                <!-- Form Section -->
+                <div class="registry-card">
+                    <div class="registry-card-header">
+                        <h2 class="registry-card-title"><span>📝</span> Register New Animal Record</h2>
+                    </div>
+                    <form id="animalForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="anCode">Animal Code</label>
+                                <input type="text" id="anCode" class="form-control" placeholder="e.g. AN-1045" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="anSpecies">Species</label>
+                                <select id="anSpecies" class="form-control" required>
+                                    <option value="">Loading species...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="anAge">Estimated Age</label>
+                                <input type="text" id="anAge" class="form-control" placeholder="e.g. 4 years" />
+                            </div>
+                            <div class="form-group">
+                                <label for="anHealth">Health Status</label>
+                                <select id="anHealth" class="form-control">
+                                    <option value="HEALTHY">HEALTHY</option>
+                                    <option value="UNDER_OBSERVATION">UNDER OBSERVATION</option>
+                                    <option value="INJURED">INJURED</option>
+                                    <option value="CRITICAL">CRITICAL</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="anZone">Designated Zone</label>
+                                <select id="anZone" class="form-control">
+                                    <option value="">Loading zones...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="anNotes">Field Notes</label>
+                                <input type="text" id="anNotes" class="form-control" placeholder="Behavioral remarks" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary-action">Save Animal Record <span aria-hidden="true">↗</span></button>
+                    </form>
+                </div>
+
+                <!-- Table Section -->
+                <div class="registry-card">
+                    <div class="registry-card-header">
+                        <h2 class="registry-card-title"><span>📋</span> Active Tracked Specimens</h2>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label for="filterHealth" style="font-size:11px; font-weight:700; color:#4b6354; text-transform:uppercase;">HEALTH:</label>
+                            <select id="filterHealth" class="form-control" style="width: auto; padding: 6px 12px; font-size:12.5px;" onchange="loadAnimals()">
+                                <option value="">All Health Categories</option>
+                                <option value="HEALTHY">HEALTHY</option>
+                                <option value="UNDER_OBSERVATION">UNDER OBSERVATION</option>
+                                <option value="INJURED">INJURED</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Animal Code</th>
+                                    <th>Species ID</th>
+                                    <th>Age</th>
+                                    <th>Health Status</th>
+                                    <th>Zone ID</th>
+                                    <th>Passport</th>
+                                </tr>
+                            </thead>
+                            <tbody id="animalsTbody">
+                                <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 28px;">Loading animals...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer matching Dashboard -->
+                <footer class="dashboard-footer">
+                    <span class="footer-mark" aria-hidden="true">🌱</span>
+                    <p><strong>Protect wildlife. Preserve nature.</strong><br>Thank you for being part of the WildGuard conservation effort.</p>
+                    <span class="footer-caption">WILDGUARD <span>•</span> CONSERVATION PLATFORM</span>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- QR Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle" style="color: #153d2d; margin-top: 0; font-size: 1.15rem;">Animal Passport</h3>
+            <p id="modalHealth" style="color: #64748b; font-size: 13px; margin-bottom: 12px;">Secure verification tag</p>
+            <div class="modal-qr-box"><div id="qrcode"></div></div>
+            <button type="button" class="btn-close" onclick="closeQrModal()">Close Passport</button>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:8082/api";
+
+        async function init() {
+            try {
+                const [spRes, zRes] = await Promise.all([fetch(`${API}/species`), fetch(`${API}/zones`)]);
+                if (spRes.ok) {
+                    const species = await spRes.json();
+                    document.getElementById("anSpecies").innerHTML = '<option value="">Select Species</option>' +
+                        species.map(s => `<option value="${s.id}">${s.commonName} (${s.scientificName})</option>`).join('');
+                }
+                if (zRes.ok) {
+                    const zones = await zRes.json();
+                    document.getElementById("anZone").innerHTML = '<option value="">Select Zone</option>' +
+                        zones.map(z => `<option value="${z.id}">${z.name} (${z.zoneCode})</option>`).join('');
+                }
+            } catch (e) { console.error("API error", e); }
+            loadAnimals();
+        }
+
+        async function loadAnimals() {
+            const filter = document.getElementById("filterHealth").value;
+            const url = filter ? `${API}/animals?healthStatus=${filter}` : `${API}/animals`;
+            const tbody = document.getElementById("animalsTbody");
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (!data.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:28px; color:#94a3b8;">No records found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(a => `
+                    <tr>
+                        <td><strong>${a.animalCode}</strong></td>
+                        <td>#${a.speciesId}</td>
+                        <td>${a.estimatedAge || 'N/A'}</td>
+                        <td><span class="status-badge ${getBadge(a.healthStatus)}">${a.healthStatus}</span></td>
+                        <td>${a.zoneId ? 'Zone #' + a.zoneId : 'Unassigned'}</td>
+                        <td><button class="btn-action" onclick="openQrModal('${a.animalCode}', '${a.id}', '${a.healthStatus}')">QR Passport</button></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:28px; color:#ef4444;">Wildlife API (8082) unreachable.</td></tr>';
+            }
+        }
+
+        function getBadge(status) {
+            if (status === 'HEALTHY') return 'status-healthy';
+            if (status === 'UNDER_OBSERVATION') return 'status-obs';
+            if (status === 'INJURED') return 'status-injured';
+            return 'status-critical';
+        }
+
+        document.getElementById("animalForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const payload = {
+                animalCode: document.getElementById("anCode").value,
+                speciesId: parseInt(document.getElementById("anSpecies").value),
+                estimatedAge: document.getElementById("anAge").value,
+                healthStatus: document.getElementById("anHealth").value,
+                zoneId: document.getElementById("anZone").value ? parseInt(document.getElementById("anZone").value) : null,
+                notes: document.getElementById("anNotes").value
+            };
+            const res = await fetch(`${API}/animals`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) { this.reset(); loadAnimals(); }
+            else alert("Failed to save animal record.");
+        });
+
+        function openQrModal(code, id, health) {
+            document.getElementById('modalTitle').innerText = 'Passport: ' + code;
+            document.getElementById('modalHealth').innerText = 'Status: ' + health + ' • DB ID: #' + id;
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+            new QRCode(container, {
+                text: 'https://wildguard.internal/animals/' + id,
+                width: 140, height: 140,
+                colorDark: "#153d2d", colorLight: "#ffffff"
+            });
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+
+        function closeQrModal() { document.getElementById('qrModal').style.display = 'none'; }
+        function logoutSession() { localStorage.clear(); window.location.href = "/login"; }
+        window.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>

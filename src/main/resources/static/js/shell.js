@@ -27,34 +27,45 @@
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
             { label: "User Management", icon: "♙", href: "/admin" },
+            { label: "Animals", icon: "🐘", href: "/animals" },
+            { label: "Habitats", icon: "🌳", href: "/habitats" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Patrols", icon: "⌖", upcoming: true },
-			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
-			{ label: "Resources", icon: "▣", href: "/resources" },
-			{ label: "Programmes", icon: "♧", href: "/programmes" },
+            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+            { label: "Resources", icon: "▣", href: "/resources" },
+            { label: "Programmes", icon: "♧", href: "/programmes" }
         ],
+
         USER: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
+            { label: "Animals", icon: "🐘", href: "/animals" },
+            { label: "Habitats", icon: "🌳", href: "/habitats" },
             { label: "Report an Incident", icon: "!", upcoming: true },
             { label: "My Reports", icon: "▤", upcoming: true },
             { label: "Conservation Alerts", icon: "♧", upcoming: true }
         ],
+
         FOREST_OFFICER: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
+            { label: "Animals", icon: "🐘", href: "/animals" },
+            { label: "Habitats", icon: "🌳", href: "/habitats" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Patrols", icon: "⌖", upcoming: true },
-			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
-			{ label: "Resources", icon: "▣", href: "/resources" },
-			{ label: "Programmes", icon: "♧", href: "/programmes" },
+            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+            { label: "Resources", icon: "▣", href: "/resources" },
+            { label: "Programmes", icon: "♧", href: "/programmes" },
             { label: "Reports", icon: "▤", href: "/reports" }
         ],
+
         RESCUE_OFFICER: [
             { label: "Dashboard", icon: "⌂", href: "/dashboard" },
             { label: "Risk Radar", icon: "◎", href: "/risk-radar" },
-			{ label: "Rescue Cases", icon: "♡", href: "/rescues" },
-			{ label: "Resources", icon: "▣", href: "/resources" },
-			{ label: "Programmes", icon: "♧", href: "/programmes" },
+            { label: "Animals", icon: "🐘", href: "/animals" },
+            { label: "Habitats", icon: "🌳", href: "/habitats" },
+            { label: "Rescue Cases", icon: "♡", href: "/rescues" },
+            { label: "Resources", icon: "▣", href: "/resources" },
+            { label: "Programmes", icon: "♧", href: "/programmes" },
             { label: "Incidents", icon: "!", upcoming: true },
             { label: "Reports", icon: "▤", href: "/reports" }
         ]
@@ -72,7 +83,11 @@
                 link.href = item.href;
                 link.className = "nav-link";
 
-                if (item.href === path) {
+                if (
+                    item.href === path ||
+                    (item.href !== "/dashboard" &&
+                     path.startsWith(item.href + "/"))
+                ) {
                     link.classList.add("active");
                     link.setAttribute("aria-current", "page");
                 }
@@ -115,20 +130,18 @@
     const pageTitle = document.getElementById("pageTitle");
 
     if (pageTitle) {
-        if (path === "/admin") {
-            pageTitle.textContent = "User Management";
-        } else if (path === "/reports") {
-            pageTitle.textContent = "Reports";
-        } else if (path === "/risk-radar") {
-            pageTitle.textContent = "Wildlife Risk Radar";
-        } else if (path === "/rescues") {
-            pageTitle.textContent = "Rescue Cases";
-        } else if (path === "/resources") {
-            pageTitle.textContent = "Resources";
-        } else if (path === "/programmes") {
-            pageTitle.textContent = "Programmes";
-        } else {
-            pageTitle.textContent = "Your Dashboard";
-        }
+        const pageTitles = {
+            "/dashboard": "Your Dashboard",
+            "/admin": "User Management",
+            "/reports": "Reports",
+            "/risk-radar": "Wildlife Risk Radar",
+            "/rescues": "Rescue Cases",
+            "/resources": "Resources",
+            "/programmes": "Programmes",
+            "/animals": "Animal Management",
+            "/habitats": "Habitat Management"
+        };
+
+        pageTitle.textContent = pageTitles[path] || "Your Dashboard";
     }
 })();

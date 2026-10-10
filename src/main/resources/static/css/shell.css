@@ -798,3 +798,56 @@ css
         animation-iteration-count: 1 !important;
     }
 }
+
+
+#sideNav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0 12px;
+    margin-top: 10px;
+}
+
+/* Individual navigation items */
+#sideNav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    height: auto;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    margin: 0;
+    line-height: 1.4;
+    text-decoration: none;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+/* Keep icons aligned */
+#sideNav .nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 20px;
+    width: 20px;
+}
+
+/* Active item */
+#sideNav .nav-link.active {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+/* Coming soon items */
+#sideNav .nav-disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Prevent labels from pushing items out of alignment */
+#sideNav .nav-link > span:not(.nav-icon) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

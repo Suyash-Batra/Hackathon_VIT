@@ -1,0 +1,483 @@
+Folder PATH listing for volume Acer
+Volume serial number is 26F8-72AA
+C:.
+¦   .classpath
+¦   .DS_Store
+¦   .gitattributes
+¦   .gitignore
+¦   .project
+¦   mvnw
+¦   mvnw.cmd
+¦   pom.xml
+¦   struct.txt
+¦   
++---.mvn
+¦   +---wrapper
+¦           maven-wrapper.properties
+¦           
++---.settings
+¦       org.eclipse.core.resources.prefs
+¦       org.eclipse.jdt.apt.core.prefs
+¦       org.eclipse.jdt.core.prefs
+¦       org.springframework.ide.eclipse.prefs
+¦       
++---bin
+¦   ¦   .gitattributes
+¦   ¦   .gitignore
+¦   ¦   .project
+¦   ¦   mvnw
+¦   ¦   mvnw.cmd
+¦   ¦   pom.xml
+¦   ¦   
+¦   +---.mvn
+¦   ¦   +---wrapper
+¦   ¦           maven-wrapper.properties
+¦   ¦           
+¦   +---.settings
+¦   ¦       org.eclipse.core.resources.prefs
+¦   ¦       
+¦   +---conservation-service
+¦   ¦   ¦   pom.xml
+¦   ¦   ¦   
+¦   ¦   +---src
+¦   ¦       +---main
+¦   ¦       ¦   +---java
+¦   ¦       ¦   ¦   +---com
+¦   ¦       ¦   ¦       +---wildguard
+¦   ¦       ¦   ¦           +---conservation
+¦   ¦       ¦   ¦                   HackathonApplication.class
+¦   ¦       ¦   ¦                   
+¦   ¦       ¦   +---resources
+¦   ¦       ¦           application.properties
+¦   ¦       ¦           
+¦   ¦       +---test
+¦   ¦           +---java
+¦   ¦               +---com
+¦   ¦                   +---example
+¦   ¦                       +---Hackathon
+¦   ¦                               HackathonApplicationTests.class
+¦   ¦                               
+¦   +---operations-service
+¦   ¦   ¦   pom.xml
+¦   ¦   ¦   
+¦   ¦   +---src
+¦   ¦       +---main
+¦   ¦       ¦   +---java
+¦   ¦       ¦   ¦   +---com
+¦   ¦       ¦   ¦       +---wildguard
+¦   ¦       ¦   ¦           +---operations
+¦   ¦       ¦   ¦                   HackathonApplication.class
+¦   ¦       ¦   ¦                   
+¦   ¦       ¦   +---resources
+¦   ¦       ¦           application.properties
+¦   ¦       ¦           
+¦   ¦       +---test
+¦   ¦           +---java
+¦   ¦               +---com
+¦   ¦                   +---example
+¦   ¦                       +---Hackathon
+¦   ¦                               HackathonApplicationTests.class
+¦   ¦                               
+¦   +---src
+¦   ¦   +---main
+¦   ¦   ¦   +---java
+¦   ¦   ¦   ¦   +---com
+¦   ¦   ¦   ¦       +---example
+¦   ¦   ¦   ¦           +---Hackathon
+¦   ¦   ¦   ¦                   HackathonApplication.class
+¦   ¦   ¦   ¦                   
+¦   ¦   ¦   +---resources
+¦   ¦   ¦           application.properties
+¦   ¦   ¦           
+¦   ¦   +---test
+¦   ¦       +---java
+¦   ¦           +---com
+¦   ¦               +---example
+¦   ¦                   +---Hackathon
+¦   ¦                           HackathonApplicationTests.class
+¦   ¦                           
+¦   +---target
+¦   ¦   +---classes
+¦   ¦       +---META-INF
+¦   ¦               MANIFEST.MF
+¦   ¦               
+¦   +---wildlife-service
+¦       ¦   pom.xml
+¦       ¦   
+¦       +---src
+¦           +---main
+¦           ¦   +---java
+¦           ¦   ¦   +---com
+¦           ¦   ¦       +---wildguard
+¦           ¦   ¦           +---wildlife
+¦           ¦   ¦                   HackathonApplication.class
+¦           ¦   ¦                   
+¦           ¦   +---resources
+¦           ¦           application.properties
+¦           ¦           
+¦           +---test
+¦               +---java
+¦                   +---com
+¦                       +---example
+¦                           +---Hackathon
+¦                                   HackathonApplicationTests.class
+¦                                   
++---conservation-service
+¦   ¦   pom.xml
+¦   ¦   README.md
+¦   ¦   
+¦   +---src
+¦       +---main
+¦       ¦   +---java
+¦       ¦   ¦   +---com
+¦       ¦   ¦       +---wildguard
+¦       ¦   ¦           +---conservation
+¦       ¦   ¦               ¦   ConservationApplication.java
+¦       ¦   ¦               ¦   
+¦       ¦   ¦               +---client
+¦       ¦   ¦               ¦       ServiceGateway.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---config
+¦       ¦   ¦               ¦       DemoDataLoader.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---controller
+¦       ¦   ¦               ¦       ProgrammeController.java
+¦       ¦   ¦               ¦       RescueController.java
+¦       ¦   ¦               ¦       ResourceController.java
+¦       ¦   ¦               ¦       SummaryController.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---dto
+¦       ¦   ¦               ¦       ActivityDto.java
+¦       ¦   ¦               ¦       ActivityRequest.java
+¦       ¦   ¦               ¦       AllocationDto.java
+¦       ¦   ¦               ¦       AllocationRequest.java
+¦       ¦   ¦               ¦       AttentionItem.java
+¦       ¦   ¦               ¦       ConservationSummary.java
+¦       ¦   ¦               ¦       LabelValue.java
+¦       ¦   ¦               ¦       ProgrammeDto.java
+¦       ¦   ¦               ¦       ProgrammeRequest.java
+¦       ¦   ¦               ¦       RescueDto.java
+¦       ¦   ¦               ¦       RescueRequest.java
+¦       ¦   ¦               ¦       ResourceDto.java
+¦       ¦   ¦               ¦       ResourceRequest.java
+¦       ¦   ¦               ¦       ResourceStatusRequest.java
+¦       ¦   ¦               ¦       ReviewDecisionRequest.java
+¦       ¦   ¦               ¦       ReviewRequest.java
+¦       ¦   ¦               ¦       StageChangeRequest.java
+¦       ¦   ¦               ¦       TimelineEntry.java
+¦       ¦   ¦               ¦       TreatmentRequest.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---entity
+¦       ¦   ¦               ¦       AllocationTarget.java
+¦       ¦   ¦               ¦       Programme.java
+¦       ¦   ¦               ¦       ProgrammeActivity.java
+¦       ¦   ¦               ¦       ProgrammeStatus.java
+¦       ¦   ¦               ¦       ReleaseReviewStatus.java
+¦       ¦   ¦               ¦       RescueCase.java
+¦       ¦   ¦               ¦       RescueStage.java
+¦       ¦   ¦               ¦       RescueStageHistory.java
+¦       ¦   ¦               ¦       ResourceAllocation.java
+¦       ¦   ¦               ¦       ResourceCategory.java
+¦       ¦   ¦               ¦       ResourceItem.java
+¦       ¦   ¦               ¦       ResourceStatus.java
+¦       ¦   ¦               ¦       TreatmentRecord.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---error
+¦       ¦   ¦               ¦       ApiException.java
+¦       ¦   ¦               ¦       GlobalExceptionHandler.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---repository
+¦       ¦   ¦               ¦       ProgrammeActivityRepository.java
+¦       ¦   ¦               ¦       ProgrammeRepository.java
+¦       ¦   ¦               ¦       RescueCaseRepository.java
+¦       ¦   ¦               ¦       RescueStageHistoryRepository.java
+¦       ¦   ¦               ¦       ResourceAllocationRepository.java
+¦       ¦   ¦               ¦       ResourceItemRepository.java
+¦       ¦   ¦               ¦       TreatmentRecordRepository.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---security
+¦       ¦   ¦               ¦       Caller.java
+¦       ¦   ¦               ¦       JwtAuthFilter.java
+¦       ¦   ¦               ¦       Role.java
+¦       ¦   ¦               ¦       SecurityConfig.java
+¦       ¦   ¦               ¦       
+¦       ¦   ¦               +---service
+¦       ¦   ¦                       ActivityLog.java
+¦       ¦   ¦                       ConservationSummaryService.java
+¦       ¦   ¦                       ProgrammeService.java
+¦       ¦   ¦                       RescueService.java
+¦       ¦   ¦                       ResourceService.java
+¦       ¦   ¦                       TextUtil.java
+¦       ¦   ¦                       
+¦       ¦   +---resources
+¦       ¦           application.properties
+¦       ¦           schema.sql
+¦       ¦           
+¦       +---test
+¦           +---java
+¦               +---com
+¦                   +---wildguard
+¦                       +---conservation
+¦                           +---service
+¦                                   ConservationRulesTest.java
+¦                                   
++---operations-service
+¦   ¦   pom.xml
+¦   ¦   
+¦   +---src
+¦       +---main
+¦       ¦   +---java
+¦       ¦   ¦   +---com
+¦       ¦   ¦       +---wildguard
+¦       ¦   ¦           +---operations
+¦       ¦   ¦                   OperationsApplication.java
+¦       ¦   ¦                   
+¦       ¦   +---resources
+¦       ¦           application.properties
+¦       ¦           
+¦       +---test
+¦           +---java
+¦               +---com
+¦                   +---example
+¦                       +---Hackathon
+¦                               HackathonApplicationTests.java
+¦                               
++---src
+¦   +---main
+¦   ¦   +---java
+¦   ¦   ¦   +---com
+¦   ¦   ¦       +---example
+¦   ¦   ¦           +---Hackathon
+¦   ¦   ¦               ¦   HackathonApplication.java
+¦   ¦   ¦               ¦   
+¦   ¦   ¦               +---config
+¦   ¦   ¦               ¦       JwtAuthenticationFilter.java
+¦   ¦   ¦               ¦       JwtService.java
+¦   ¦   ¦               ¦       SecurityConfig.java
+¦   ¦   ¦               ¦       
+¦   ¦   ¦               +---controller
+¦   ¦   ¦               ¦       AdminController.java
+¦   ¦   ¦               ¦       AdminMetricsController.java
+¦   ¦   ¦               ¦       AuthController.java
+¦   ¦   ¦               ¦       PageController.java
+¦   ¦   ¦               ¦       PlatformHealthController.java
+¦   ¦   ¦               ¦       RiskRadarController.java
+¦   ¦   ¦               ¦       
+¦   ¦   ¦               +---dto
+¦   ¦   ¦               ¦       AuthResponse.java
+¦   ¦   ¦               ¦       LoginRequest.java
+¦   ¦   ¦               ¦       RoleUpdateRequest.java
+¦   ¦   ¦               ¦       SignupRequest.java
+¦   ¦   ¦               ¦       
+¦   ¦   ¦               +---model
+¦   ¦   ¦               ¦       User.java
+¦   ¦   ¦               ¦       
+¦   ¦   ¦               +---repository
+¦   ¦   ¦               ¦       UserRepository.java
+¦   ¦   ¦               ¦       
+¦   ¦   ¦               +---service
+¦   ¦   ¦                       AuthService.java
+¦   ¦   ¦                       RiskRadarService.java
+¦   ¦   ¦                       
+¦   ¦   +---resources
+¦   ¦       ¦   application.properties
+¦   ¦       ¦   
+¦   ¦       +---static
+¦   ¦       ¦   ¦   New folder.zip
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---css
+¦   ¦       ¦   ¦       admin.css
+¦   ¦       ¦   ¦       auth.css
+¦   ¦       ¦   ¦       conservation.css
+¦   ¦       ¦   ¦       reports.css
+¦   ¦       ¦   ¦       risk-radar.css
+¦   ¦       ¦   ¦       shell.css
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---js
+¦   ¦       ¦   ¦       admin.js
+¦   ¦       ¦   ¦       auth.js
+¦   ¦       ¦   ¦       conservation-api.js
+¦   ¦       ¦   ¦       dashboard.js
+¦   ¦       ¦   ¦       programmes.js
+¦   ¦       ¦   ¦       reports.js
+¦   ¦       ¦   ¦       rescues.js
+¦   ¦       ¦   ¦       resources.js
+¦   ¦       ¦   ¦       risk-radar.js
+¦   ¦       ¦   ¦       shell.js
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---New folder
+¦   ¦       ¦           admin.css
+¦   ¦       ¦           admin_dashboard.html
+¦   ¦       ¦           auth.css
+¦   ¦       ¦           dashboard.html
+¦   ¦       ¦           login.html
+¦   ¦       ¦           reports.css
+¦   ¦       ¦           reports.html
+¦   ¦       ¦           risk-radar.css
+¦   ¦       ¦           risk-radar.html
+¦   ¦       ¦           shell.css
+¦   ¦       ¦           signup.html
+¦   ¦       ¦           
+¦   ¦       +---templates
+¦   ¦               admin_dashboard.html
+¦   ¦               dashboard.html
+¦   ¦               login.html
+¦   ¦               programmes.html
+¦   ¦               reports.html
+¦   ¦               rescues.html
+¦   ¦               resources.html
+¦   ¦               risk-radar.html
+¦   ¦               signup.html
+¦   ¦               
+¦   +---test
+¦       +---java
+¦           +---com
+¦               +---example
+¦                   +---Hackathon
+¦                           HackathonApplicationTests.java
+¦                           
++---target
+¦   +---classes
+¦   ¦   ¦   application.properties
+¦   ¦   ¦   
+¦   ¦   +---com
+¦   ¦   ¦   +---example
+¦   ¦   ¦       +---Hackathon
+¦   ¦   ¦               HackathonApplication.class
+¦   ¦   ¦               
+¦   ¦   +---META-INF
+¦   ¦       ¦   MANIFEST.MF
+¦   ¦       ¦   
+¦   ¦       +---maven
+¦   ¦           +---com.example
+¦   ¦               +---Hackathon
+¦   ¦                       pom.properties
+¦   ¦                       pom.xml
+¦   ¦                       
+¦   +---generated-sources
+¦   ¦   +---annotations
+¦   +---generated-test-sources
+¦   ¦   +---test-annotations
+¦   +---test-classes
+¦       +---com
+¦           +---example
+¦               +---Hackathon
+¦                       HackathonApplicationTests.class
+¦                       
++---wildlife-service
+    ¦   .classpath
+    ¦   .project
+    ¦   pom.xml
+    ¦   
+    +---.settings
+    ¦       org.eclipse.core.resources.prefs
+    ¦       org.eclipse.jdt.apt.core.prefs
+    ¦       org.eclipse.jdt.core.prefs
+    ¦       org.eclipse.m2e.core.prefs
+    ¦       org.springframework.ide.eclipse.prefs
+    ¦       
+    +---src
+    ¦   +---main
+    ¦   ¦   +---java
+    ¦   ¦   ¦   +---com
+    ¦   ¦   ¦       +---wildguard
+    ¦   ¦   ¦           +---wildlife
+    ¦   ¦   ¦               ¦   WildlifeApplication.java
+    ¦   ¦   ¦               ¦   
+    ¦   ¦   ¦               +---config
+    ¦   ¦   ¦               ¦       SecurityConfig.java
+    ¦   ¦   ¦               ¦       
+    ¦   ¦   ¦               +---controller
+    ¦   ¦   ¦               ¦       WildlifeController.java
+    ¦   ¦   ¦               ¦       WildlifeViewController.java
+    ¦   ¦   ¦               ¦       
+    ¦   ¦   ¦               +---entity
+    ¦   ¦   ¦               ¦       Animal.java
+    ¦   ¦   ¦               ¦       Habitat.java
+    ¦   ¦   ¦               ¦       ProtectedArea.java
+    ¦   ¦   ¦               ¦       Species.java
+    ¦   ¦   ¦               ¦       WaterSource.java
+    ¦   ¦   ¦               ¦       Zone.java
+    ¦   ¦   ¦               ¦       
+    ¦   ¦   ¦               +---repository
+    ¦   ¦   ¦               ¦       AnimalRepository.java
+    ¦   ¦   ¦               ¦       HabitatRepository.java
+    ¦   ¦   ¦               ¦       ProtectedAreaRepository.java
+    ¦   ¦   ¦               ¦       SpeciesRepository.java
+    ¦   ¦   ¦               ¦       WaterSourceRepository.java
+    ¦   ¦   ¦               ¦       ZoneRepository.java
+    ¦   ¦   ¦               ¦       
+    ¦   ¦   ¦               +---service
+    ¦   ¦   ¦                       WildlifeService.java
+    ¦   ¦   ¦                       
+    ¦   ¦   +---resources
+    ¦   ¦   ¦       application.properties
+    ¦   ¦   ¦       
+    ¦   ¦   +---webapp
+    ¦   ¦       +---WEB-INF
+    ¦   ¦           +---jsp
+    ¦   ¦                   animals.jsp
+    ¦   ¦                   habitats.jsp
+    ¦   ¦                   
+    ¦   +---test
+    ¦       +---java
+    ¦       ¦   +---com
+    ¦       ¦       +---example
+    ¦       ¦           +---Hackathon
+    ¦       ¦                   HackathonApplicationTests.java
+    ¦       ¦                   
+    ¦       +---resources
+    +---target
+        +---classes
+        ¦   ¦   application.properties
+        ¦   ¦   
+        ¦   +---com
+        ¦   ¦   +---wildguard
+        ¦   ¦       +---wildlife
+        ¦   ¦           ¦   WildlifeApplication.class
+        ¦   ¦           ¦   
+        ¦   ¦           +---config
+        ¦   ¦           ¦       SecurityConfig.class
+        ¦   ¦           ¦       
+        ¦   ¦           +---controller
+        ¦   ¦           ¦       WildlifeController.class
+        ¦   ¦           ¦       WildlifeViewController.class
+        ¦   ¦           ¦       
+        ¦   ¦           +---entity
+        ¦   ¦           ¦       Animal.class
+        ¦   ¦           ¦       Habitat.class
+        ¦   ¦           ¦       ProtectedArea.class
+        ¦   ¦           ¦       Species.class
+        ¦   ¦           ¦       WaterSource.class
+        ¦   ¦           ¦       Zone.class
+        ¦   ¦           ¦       
+        ¦   ¦           +---repository
+        ¦   ¦           ¦       AnimalRepository.class
+        ¦   ¦           ¦       HabitatRepository.class
+        ¦   ¦           ¦       ProtectedAreaRepository.class
+        ¦   ¦           ¦       SpeciesRepository.class
+        ¦   ¦           ¦       WaterSourceRepository.class
+        ¦   ¦           ¦       ZoneRepository.class
+        ¦   ¦           ¦       
+        ¦   ¦           +---service
+        ¦   ¦                   WildlifeService.class
+        ¦   ¦                   
+        ¦   +---META-INF
+        ¦       ¦   MANIFEST.MF
+        ¦       ¦   
+        ¦       +---maven
+        ¦           +---com.example
+        ¦               +---Hackathon
+        ¦                       pom.properties
+        ¦                       pom.xml
+        ¦                       
+        +---generated-sources
+        ¦   +---annotations
+        +---generated-test-sources
+        ¦   +---test-annotations
+        +---test-classes
+            +---com
+                +---example
+                    +---Hackathon
+                            HackathonApplicationTests.class
+                            

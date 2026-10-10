@@ -44,7 +44,9 @@ public class SecurityConfig {
                                 "/resources",
                                 "/programmes",
                                 "/favicon.ico",
-                                "/error"
+                                "/error",
+                                "/animals",
+                                "/habitats"
                         ).permitAll()
 
                         .requestMatchers(
